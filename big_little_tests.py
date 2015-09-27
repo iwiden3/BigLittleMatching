@@ -393,7 +393,106 @@ bigs52 = [big_nick, big_chris, big_josh, big_tony]
 littles52 = [little_alex, little_kennon, little_tim, little_kat,little_miller]
 result52 = {'nick':'alex','nick_copy':'kennon','chris':'kat','josh':'tim','tony':'miller'}
 
+big_anna = {
+    'name': 'anna',
+    'want': 2,
+    'twins': 0,
+    'pref': ['ella', 'liz', 'sara'],
+    'has_little': 0,
+
+    }
+
+big_laura = {
+    'name': 'laura',
+    'want': 2,
+    'twins': 0,
+    'pref': ['sara', 'ella', 'liz'],
+    'has_little': 0,
+
+    }
+
+big_bonnie = {
+    'name': 'bonnie',
+    'want': 0,
+    'twins': 0,
+    'pref': ['liz', 'ella', 'sara'],
+    'dying_family': 0,
+    'has_little': 3,
+
+    }
+
+big_emily = {
+    'name': 'emily',
+    'want': 2,
+    'twins': 0,
+    'pref': ['rowan', 'marie', 'krista'],
+    'dying_family': 1,
+    'has_little': 0,
+    }
+
+big_jess = {
+    'name': 'jess',
+    'want': 2,
+    'twins': 0,
+    'pref': ['rowan', 'krista', 'marie'],
+    'dying_family': 0,
+    'has_little': 1,
+    }
+
+big_zoey = {
+    'name': 'zoey',
+    'want': 2,
+    'twins': 0,
+    'pref': ['marie', 'rowan', 'krista'],
+    'dying_family': 1,
+    'has_little': 2,
+    }
+
+big_claire = {
+    'name': 'claire',
+    'want': 2,
+    'twins': 0,
+    'pref': ['marie', 'rowan', 'tina'],
+    'dying_family': 0,
+    'has_little': 3,
+    }
+
+little_ella = {'name': 'ella', 'pref': ['bonnie', 'laura', 'anna']}
+little_liz = {'name': 'liz', 'pref': ['anna', 'bonnie', 'laura']}
+little_sara = {'name': 'sara', 'pref': ['laura', 'anna', 'bonnie']}
 
 
+little_krista = {'name': 'krista', 'pref': ['zoey', 'emily', 'jess']}
+little_marie = {'name': 'marie', 'pref': ['emily', 'jess', 'zoey']}
+little_rowan = {'name': 'rowan', 'pref': ['emily', 'jess', 'zoey']}
+
+little_tina = {'name': 'tina', 'pref': ['emily', 'jess', 'zoey']}
+
+bigs0 = {'anna': big_anna, 'laura': big_laura, 'bonnie': big_bonnie}
+littles0 = [little_ella, little_liz, little_sara]
+
+result0 = {'bonnie': little_ella, 'anna': little_liz,
+           'laura': little_sara}
+
+result5 = {'ella': big_anna, 'liz': big_bonnie, 'sara': big_laura}
+
+
+bigs1 = {'emily': big_emily, 'jess': big_jess, 'zoey': big_zoey}
+
+bigs2 = {
+    'emily': big_emily,
+    'jess': big_jess,
+    'zoey': big_zoey,
+    'claire': big_claire,
+    }
+
+
+littles1 = [little_krista, little_marie,little_rowan]
+littles2 = [little_krista, little_marie,little_rowan,little_tina]
+littles3 = [little_krista, little_marie, little_rowan,little_tina]
+
+
+result1 = {'emily': little_rowan, 'jess': little_marie,
+           'zoey': little_krista}
 
 

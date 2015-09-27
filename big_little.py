@@ -6,95 +6,8 @@ import unittest
 import big_little_tests
 import Queue as Q
 from collections import defaultdict, deque
-from big_little_tests import test_bigs1,test_result1,test_result2,test_result3,test_result4,test_result5,test_result6,test_littles1,test_result7,test_littles2,test_littles3,test_twins_bigs1,test_twins_littles1
+
 choices = 3
-big_anna = {
-    'name': 'anna',
-    'want': 2,
-    'twins': 0,
-    'pref': ['ella', 'liz', 'sara'],
-    'has_little': 0,
-
-    }
-big_laura = {
-    'name': 'laura',
-    'want': 2,
-    'twins': 0,
-    'pref': ['sara', 'ella', 'liz'],
-    'has_little': 0,
-
-    }
-big_bonnie = {
-    'name': 'bonnie',
-    'want': 0,
-    'twins': 0,
-    'pref': ['liz', 'ella', 'sara'],
-    'dying_family': 0,
-    'has_little': 3,
-
-    }
-bigs0 = {'anna': big_anna, 'laura': big_laura, 'bonnie': big_bonnie}
-
-little_ella = {'name': 'ella', 'pref': ['bonnie', 'laura', 'anna']}
-little_liz = {'name': 'liz', 'pref': ['anna', 'bonnie', 'laura']}
-little_sara = {'name': 'sara', 'pref': ['laura', 'anna', 'bonnie']}
-littles0 = [little_ella, little_liz, little_sara]
-result0 = {'bonnie': little_ella, 'anna': little_liz,
-           'laura': little_sara}
-result5 = {'ella': big_anna, 'liz': big_bonnie, 'sara': big_laura}
-
-big_emily = {
-    'name': 'emily',
-    'want': 2,
-    'twins': 0,
-    'pref': ['rowan', 'marie', 'krista'],
-    'dying_family': 1,
-    'has_little': 0,
-    }
-big_jess = {
-    'name': 'jess',
-    'want': 2,
-    'twins': 0,
-    'pref': ['rowan', 'krista', 'marie'],
-    'dying_family': 0,
-    'has_little': 1,
-    }
-big_zoey = {
-    'name': 'zoey',
-    'want': 2,
-    'twins': 0,
-    'pref': ['marie', 'rowan', 'krista'],
-    'dying_family': 1,
-    'has_little': 2,
-    }
-big_claire = {
-    'name': 'claire',
-    'want': 2,
-    'twins': 0,
-    'pref': ['marie', 'rowan', 'tina'],
-    'dying_family': 0,
-    'has_little': 3,
-    }
-
-bigs1 = {'emily': big_emily, 'jess': big_jess, 'zoey': big_zoey}
-bigs2 = {
-    'emily': big_emily,
-    'jess': big_jess,
-    'zoey': big_zoey,
-    'claire': big_claire,
-    }
-
-little_krista = {'name': 'krista', 'pref': ['zoey', 'emily', 'jess']}
-little_marie = {'name': 'marie', 'pref': ['emily', 'jess', 'zoey']}
-little_rowan = {'name': 'rowan', 'pref': ['emily', 'jess', 'zoey']}
-little_tina = {'name': 'tina', 'pref': ['emily', 'jess', 'zoey']}
-
-littles1 = [little_krista, little_marie, little_rowan]
-littles2 = [little_krista, little_marie, little_rowan, little_tina]
-littles3 = [little_krista, little_marie, little_rowan, little_tina]
-
-result1 = {'emily': little_rowan, 'jess': little_marie,
-           'zoey': little_krista}
 
 def matching(bigs, littles):
     combined_result = {}
@@ -247,21 +160,21 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual((b,l),(big_miranda,little_tara))
 
     def test_get_bigs(self):
-        self.assertEqual(get_bigs(test_bigs1,7),(test_result1, False))
-        self.assertEqual(get_bigs(test_bigs1,11),(test_result2,False))
-        self.assertEqual(get_bigs(test_bigs1,14),(test_result3,False))
-        self.assertEqual(get_bigs(test_bigs1,21),(test_result4,True))
-        self.assertEqual(get_bigs(test_bigs1,24),(test_bigs1,True))
-        self.assertEqual(get_bigs(test_bigs1,22),(test_result5,True))
+        self.assertEqual(get_bigs(big_little_tests.test_bigs1,7),(big_little_tests.test_result1, False))
+        self.assertEqual(get_bigs(big_little_tests.test_bigs1,11),(big_little_tests.test_result2,False))
+        self.assertEqual(get_bigs(big_little_tests.test_bigs1,14),(big_little_tests.test_result3,False))
+        self.assertEqual(get_bigs(big_little_tests.test_bigs1,21),(big_little_tests.test_result4,True))
+        self.assertEqual(get_bigs(big_little_tests.test_bigs1,24),(big_little_tests.test_bigs1,True))
+        self.assertEqual(get_bigs(big_little_tests.test_bigs1,22),(big_little_tests.test_result5,True))
 
     def test_sort_bigs(self):
-        bigs20 = [big_emily, big_zoey, big_claire, big_jess,big_bonnie]
+        bigs20 = [big_little_tests.big_emily, big_little_tests.big_zoey, big_little_tests.big_claire, big_little_tests.big_jess,big_little_tests.big_bonnie]
         self.assertEqual(sort_bigs(bigs20), bigs20)
 
     def test_matching(self):
-        bigs20 = [big_emily,big_jess,big_zoey,big_claire]
-        littles30 = [little_krista, little_marie, little_rowan,
-                     little_tina]
+        bigs20 = [big_little_tests.big_emily,big_little_tests.big_jess,big_little_tests.big_zoey,big_little_tests.big_claire]
+        littles30 = [big_little_tests.little_krista, big_little_tests.little_marie, big_little_tests.little_rowan,
+                     big_little_tests.little_tina]
         result50 = {
             'emily': 'rowan',
             'jess': 'marie',
@@ -269,60 +182,60 @@ class TestStringMethods(unittest.TestCase):
             'claire': 'tina',
             }
         self.assertEqual(matching(bigs20, littles30), result50)
-        self.assertEqual(matching(test_bigs1,test_littles1), test_result6)
-        self.assertEqual(matching(test_bigs1,test_littles2), test_result7)
+        self.assertEqual(matching(big_little_tests.test_bigs1,big_little_tests.test_littles1), big_little_tests.test_result6)
+        self.assertEqual(matching(big_little_tests.test_bigs1,big_little_tests.test_littles2), big_little_tests.test_result7)
        # self.assertEqual(matching(test_bigs1,test_littles3),test_result7)
         #self.assertEqual(matching(big_little_tests.bigs42,big_little_tests.littles42),big_little_tests.result42)
         self.assertEqual(matching(big_little_tests.bigs52,big_little_tests.littles52),big_little_tests.result52)
 
     def matches_second_round(self):
-        result11 = {'tina': big_claire}
-        self.assertEqual(matches_second_round(bigs2, [little_tina],
+        result11 = {'tina': big_little_tests.big_claire}
+        self.assertEqual(matches_second_round(bigs2, [big_little_tests.little_tina],
                          result1), (result11, []))
 
     def test_match(self):
         result = {}
         i = 0
-        self.assertEqual(match(bigs1, little_marie, 0, result), (True,
+        self.assertEqual(match(big_little_tests.bigs1, big_little_tests.little_marie, 0, result), (True,
                          None))
-        self.assertEqual(result['emily'], little_marie)
-        self.assertEqual(match(bigs1, little_rowan, 0, result), (True,
-                         little_marie))
-        self.assertEqual(result['emily'], little_rowan)
-        self.assertEqual(match(bigs1, little_marie, 0, result), (False,
+        self.assertEqual(result['emily'], big_little_tests.little_marie)
+        self.assertEqual(match(big_little_tests.bigs1, big_little_tests.little_rowan, 0, result), (True,
+                         big_little_tests.little_marie))
+        self.assertEqual(result['emily'], big_little_tests.little_rowan)
+        self.assertEqual(match(big_little_tests.bigs1, big_little_tests.little_marie, 0, result), (False,
                          None))
-        self.assertEqual(result['emily'], little_rowan)
+        self.assertEqual(result['emily'], big_little_tests.little_rowan)
 
     def match_second_round(self):
         result = {}
         i = 0
-        littles5 = [little_rowan, little_marie, little_krista]
+        littles5 = [big_little_tests.little_rowan, little_marie, little_krista]
         l1 = sisters_dict(littles5)
-        self.assertEqual(match_second_round(big_jess, l1, i, result),
+        self.assertEqual(match_second_round(big_little_tests.big_jess, l1, i, result),
                          (True, None))
         self.assertEqual(result['rowan'], big_jess)
-        self.assertEqual(match_second_round(big_emily, l1, i, result),
+        self.assertEqual(match_second_round(big_little_tests.big_emily, l1, i, result),
                          (True, big_jess))
         self.assertEqual(result['rowan'], big_emily)
-        self.assertEqual(match_second_round(big_jess, l1, i, result),
+        self.assertEqual(match_second_round(big_little_tests.big_jess, l1, i, result),
                          (False, None))
-        self.assertEqual(result['rowan'], big_emily)
+        self.assertEqual(result['rowan'], big_little_tests.big_emily)
 
     def test_matches(self):
-        self.assertEqual(matches(bigs0, littles0), (result0, []))
-        self.assertEqual(matches(bigs1, littles1), (result1, []))
-        self.assertEqual(matches(bigs1, littles2), (result1,
-                         [little_tina]))
-        self.assertEqual(matches(bigs2, littles3), (result1,
-                         [little_tina]))
+        self.assertEqual(matches(big_little_tests.bigs0, big_little_tests.littles0), (big_little_tests.result0, []))
+        self.assertEqual(matches(big_little_tests.bigs1, big_little_tests.littles1), (big_little_tests.result1, []))
+        self.assertEqual(matches(big_little_tests.bigs1, big_little_tests.littles2), (big_little_tests.result1,
+                         [big_little_tests.little_tina]))
+        self.assertEqual(matches(big_little_tests.bigs2, big_little_tests.littles3), (big_little_tests.result1,
+                         [big_little_tests.little_tina]))
 
     def test_sisters_dict(self):
-        self.assertEqual(sisters_dict([little_rowan]),
-                         {'rowan': little_rowan})
+        self.assertEqual(sisters_dict([big_little_tests.little_rowan]),
+                         {'rowan': big_little_tests.little_rowan})
 
     def test_sister_without_matches(self):
-        self.assertEqual(sisters_without_matches(bigs2, result1),
-                         [big_claire])
+        self.assertEqual(sisters_without_matches(big_little_tests.bigs2, big_little_tests.result1),
+                         [big_little_tests.big_claire])
 
 
 if __name__ == '__main__':

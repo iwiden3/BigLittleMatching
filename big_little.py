@@ -10,10 +10,10 @@ from collections import defaultdict, deque
 choices = 3
 
 
-def matching(bigs, littles):
+def matching(bigs, littles_original):
+    littles = copy.deepcopy(littles_original)
     combined_result = {}
     (sorted_bigs, bigs_with_twins) = get_bigs(bigs, len(littles))
-    #print [x['name'] for x in sorted_bigs]
     bigs_dict = sisters_dict(sorted_bigs)
     if bigs_with_twins:
         for big_with_twin in bigs_with_twins:
@@ -27,19 +27,13 @@ def matching(bigs, littles):
                     ind = little['pref'].index(big_name) + 1
                     little['pref'].insert(ind, big_twin_name)
 
-    #print bigs_with_twins
-    (result, second_round) = matches(bigs_dict, littles)
-    #print second_round
-    littles_dict = sisters_dict(second_round)
+    (result, second_round_littles) = matches(bigs_dict, littles)
+    littles_dict = sisters_dict(second_round_littles)
     unmatched_bigs = sisters_without_matches(bigs_dict, result)
-    #print unmatched_bigs
-    (result2, third_round) = matches(littles_dict, unmatched_bigs)
-    #print third_round
+    (result2, third_round_bigs) = matches(littles_dict, unmatched_bigs)
     unmatched_littles = sisters_without_matches(littles_dict, result2)
-    #print unmatched_littles
     if unmatched_littles:
-        priority_bigs = sort_bigs(third_round)[:len(unmatched_littles)]
-        #print priority_bigs
+        priority_bigs = sort_bigs(third_round_bigs)[:len(unmatched_littles)]
         for i in range(len(priority_bigs)):
             pbig = priority_bigs[i]
             pbig_name = pbig['name']
@@ -49,9 +43,7 @@ def matching(bigs, littles):
         combined_result[k] = v['name']
     for (k, v) in result2.iteritems():
         combined_result[v['name']] = k
-
     #print combined_result
-
     return combined_result
 
 def matches(bigs, littles):
@@ -133,11 +125,16 @@ def get_key(big):
 
 
 def get_bigs(bigs, number_of_littles):
+    
+    bigs_twins = [big for big in bigs if big['twins'] == 1]
+    if number_of_littles > (len(bigs_twins) + len(bigs)):
+        num = number_of_littles - len(bigs_twins)-len(bigs)
+        raise ValueError("Not enough bigs for all Littles, Need "+str(num)+" more twins!")
+
+
     first_bigs = [big for big in bigs if big['has_little'] == 0
                   and big['want'] > 0]
-
     # are there enough littles for the girls who have not been bigs and want a little?
-
     if number_of_littles <= len(first_bigs):
         return (first_bigs, None)
     
@@ -151,17 +148,13 @@ def get_bigs(bigs, number_of_littles):
     if number_of_littles <= len(first_bigs) + len(second_bigs) + len(bigs_twins):
         needed_twins = number_of_littles - len(first_bigs) - len(second_bigs)
         s_bigs_twins = sort_bigs(bigs_twins)
-#  print [x['name'] for x in s_bigs_twins[:needed_twins]]
         return (first_bigs + second_bigs, s_bigs_twins[:needed_twins])
-   # print len(bigs)+len(bigs_twins)
     last_bigs = [big for big in bigs if big['want'] == 0]
     if number_of_littles <= len(bigs) + len(bigs_twins):
         number_last_bigs = len(bigs) + len(bigs_twins ) - number_of_littles
         sorted_last_bigs = sort_bigs(last_bigs)
         a = first_bigs + second_bigs + sorted_last_bigs[:len(sorted_last_bigs) - number_last_bigs]
-      #  print [x['name'] for x in bigs_twins]
         return (first_bigs + second_bigs + sorted_last_bigs[:len(sorted_last_bigs) - number_last_bigs],bigs_twins)
-    bigs_twins = [big for big in bigs if big['twins'] == 1]
     return (bigs, bigs_twins)
 
 def get_twins(bigs, number_of_littles):
@@ -186,16 +179,16 @@ class TestStringMethods(unittest.TestCase):
             'zoey': 'krista',
             'claire': 'tina',
             }
-       # self.assertEqual(matching(bigs, littles), result)
-      #  self.assertEqual(matching(big_little_tests.test_bigs1,
-       #                 big_little_tests.test_littles1),
-        #                 big_little_tests.test_result6)
-        #self.assertEqual(matching(big_little_tests.test_bigs1,
-         #                big_little_tests.test_littles2),
-          #               big_little_tests.test_result7)
+        self.assertEqual(matching(bigs, littles), result)
+        self.assertEqual(matching(big_little_tests.test_bigs1,
+                        big_little_tests.test_littles1),
+                         big_little_tests.test_result6)
+        self.assertEqual(matching(big_little_tests.test_bigs1,
+                        big_little_tests.test_littles2),
+                       big_little_tests.test_result7)
 
         self.assertEqual(matching(big_little_tests.test_bigs1,big_little_tests.test_littles3),big_little_tests.test_result15)
-        #self.assertEqual(matching(big_little_tests.bigs42,big_little_tests.littles42),big_little_tests.result42)
+        self.assertEqual(matching(big_little_tests.bigs42,big_little_tests.littles42),big_little_tests.result42)
 
         self.assertEqual(matching(big_little_tests.bigs52,
                         big_little_tests.littles52),
@@ -261,8 +254,14 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(get_bigs(big_little_tests.test_bigs1, 21),(big_little_tests.test_result4, big_twins_result1))
         self.assertEqual(get_bigs(big_little_tests.test_bigs1, 23),
                          (big_little_tests.test_bigs1, big_twins_result2))
-        self.assertEqual(get_bigs(big_little_tests.test_bigs1, 24),
-                         (big_little_tests.test_bigs1, big_twins_result2))
+        try:
+            get_bigs(big_little_tests.test_bigs1, 24)
+        except ValueError:
+            pass
+        except e:
+            self.fail("Unexpecteed exception thrown",e)
+        else:
+            self.fail("ExpectedException not thrown")
 
 
 if __name__ == '__main__':

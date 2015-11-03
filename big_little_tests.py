@@ -161,6 +161,72 @@ big_tracy = {
     'has_little': 0,
     }
 
+big_nick = {
+    'name': 'nick',
+    'want': 2,
+    'twins': 1,
+    'pref': ['alex', 'kennon', 'tim'],
+    'dying_family': 1,
+    'has_little': 0,
+    }
+
+big_chris = {
+    'name': 'chris',
+    'want': 2,
+    'twins': 1,
+    'pref': ['kennon', 'tim', 'alex'],
+    'dying_family': 0,
+    'has_little': 0,
+    }
+
+big_josh = {
+    'name': 'josh',
+    'want': 1,
+    'twins': 1,
+    'pref': ['kat', 'kennon', 'tim'],
+    'dying_family': 0,
+    'has_little': 0,
+    }
+
+big_tony = {
+    'name': 'tony',
+    'want': 1,
+    'twins': 1,
+    'pref': ['kat', 'kennon', 'tim'],
+    'dying_family': 0,
+    'has_little': 0,
+    }
+
+little_alex = {'name': 'alex', 'pref': ['nick', 'chris', 'josh']}
+little_kennon = {'name': 'kennon', 'pref': ['nick', 'chris', 'josh']}
+little_tim = {'name': 'tim', 'pref': ['josh', 'chris', 'nick']}
+little_kat = {'name': 'kat', 'pref': ['nick', 'chris', 'josh']}
+little_miller = {'name': 'miller', 'pref': ['matt', 'eric', 'justin']}
+
+little_tara = {'name': 'tara', 'pref': ['molly', 'ariel', 'snow']}
+little_hara = {'name': 'hara', 'pref': ['belle', 'carrie', 'miranda']}
+little_jana = {'name': 'jana', 'pref': ['samantha', 'charlie', 'topanga'
+               ]}
+
+little_lane = {'name': 'lane', 'pref': ['erica', 'jessica', 'nicole']}
+little_mara = {'name': 'mara', 'pref': ['lily', 'robin', 'molly']}
+little_zenon = {'name': 'zenon', 'pref': ['ariel', 'snow', 'carrie']}
+
+little_elsa = {'name': 'elsa', 'pref': ['miranda', 'samantha', 'charlie'
+               ]}
+little_brenda = {'name': 'brenda', 'pref': ['topanga', 'erica',
+                 'jessica']}
+little_kelly = {'name': 'kelly', 'pref': ['nicole', 'lily', 'robin']}
+little_julia = {'name': 'julia', 'pref': ['molly', 'ariel', 'snow']}
+
+little_betty = {'name': 'betty', 'pref': ['belle', 'carrie', 'miranda']}
+little_xena = {'name': 'xena', 'pref': ['samantha', 'charlie', 'topanga'
+               ]}
+
+little_meg = {'name': 'meg', 'pref': ['erica', 'jessica', 'nicole']}
+little_pam = {'name': 'pam', 'pref': ['lily', 'robin', 'molly']}
+little_barbie = {'name': 'barbie', 'pref': ['ariel', 'snow', 'belle']}
+
 test_bigs1 = [
     big_rhianna,
     big_molly,
@@ -273,29 +339,7 @@ test_result5 = [
     big_robin,
     ]
 
-little_tara = {'name': 'tara', 'pref': ['molly', 'ariel', 'snow']}
-little_hara = {'name': 'hara', 'pref': ['belle', 'carrie', 'miranda']}
-little_jana = {'name': 'jana', 'pref': ['samantha', 'charlie', 'topanga'
-               ]}
 
-little_lane = {'name': 'lane', 'pref': ['erica', 'jessica', 'nicole']}
-little_mara = {'name': 'mara', 'pref': ['lily', 'robin', 'molly']}
-little_zenon = {'name': 'zenon', 'pref': ['ariel', 'snow', 'carrie']}
-
-little_elsa = {'name': 'elsa', 'pref': ['miranda', 'samantha', 'charlie'
-               ]}
-little_brenda = {'name': 'brenda', 'pref': ['topanga', 'erica',
-                 'jessica']}
-little_kelly = {'name': 'kelly', 'pref': ['nicole', 'lily', 'robin']}
-little_julia = {'name': 'julia', 'pref': ['molly', 'ariel', 'snow']}
-
-little_betty = {'name': 'betty', 'pref': ['belle', 'carrie', 'miranda']}
-little_xena = {'name': 'xena', 'pref': ['samantha', 'charlie', 'topanga'
-               ]}
-
-little_meg = {'name': 'meg', 'pref': ['erica', 'jessica', 'nicole']}
-little_pam = {'name': 'pam', 'pref': ['lily', 'robin', 'molly']}
-little_barbie = {'name': 'barbie', 'pref': ['ariel', 'snow', 'belle']}
 
 test_littles1 = [
     little_tara,
@@ -382,47 +426,6 @@ test_result15 = {
 test_twins_bigs1 = [big_miranda, big_carrie]
 test_twins_littles1 = [little_tara, little_meg, little_zenon]
 
-big_nick = {
-    'name': 'nick',
-    'want': 2,
-    'twins': 1,
-    'pref': ['alex', 'kennon', 'tim'],
-    'dying_family': 1,
-    'has_little': 0,
-    }
-
-big_chris = {
-    'name': 'chris',
-    'want': 2,
-    'twins': 1,
-    'pref': ['kennon', 'tim', 'alex'],
-    'dying_family': 0,
-    'has_little': 0,
-    }
-
-big_josh = {
-    'name': 'josh',
-    'want': 1,
-    'twins': 1,
-    'pref': ['kat', 'kennon', 'tim'],
-    'dying_family': 0,
-    'has_little': 0,
-    }
-
-big_tony = {
-    'name': 'tony',
-    'want': 1,
-    'twins': 1,
-    'pref': ['kat', 'kennon', 'tim'],
-    'dying_family': 0,
-    'has_little': 0,
-    }
-
-little_alex = {'name': 'alex', 'pref': ['nick', 'chris', 'josh']}
-little_kennon = {'name': 'kennon', 'pref': ['nick', 'chris', 'josh']}
-little_tim = {'name': 'tim', 'pref': ['josh', 'chris', 'nick']}
-little_kat = {'name': 'kat', 'pref': ['nick', 'chris', 'josh']}
-little_miller = {'name': 'miller', 'pref': ['matt', 'eric', 'justin']}
 
 bigs42 = [big_nick, big_chris, big_josh]
 littles42 = [little_alex, little_kennon, little_tim, little_kat]
@@ -515,7 +518,7 @@ little_rowan = {'name': 'rowan', 'pref': ['emily', 'jess', 'zoey']}
 
 little_tina = {'name': 'tina', 'pref': ['emily', 'jess', 'zoey']}
 
-bigs0 = {'anna': big_anna, 'laura': big_laura, 'bonnie': big_bonnie}
+bigs0 = [big_anna, big_laura, big_bonnie]
 littles0 = [little_ella, little_liz, little_sara]
 
 result0 = {'bonnie': little_ella, 'anna': little_liz,
@@ -523,14 +526,11 @@ result0 = {'bonnie': little_ella, 'anna': little_liz,
 
 result5 = {'ella': big_anna, 'liz': big_bonnie, 'sara': big_laura}
 
-bigs1 = {'emily': big_emily, 'jess': big_jess, 'zoey': big_zoey}
+bigs1 =  [big_emily, big_jess, big_zoey]
 
-bigs2 = {
-    'emily': big_emily,
-    'jess': big_jess,
-    'zoey': big_zoey,
-    'claire': big_claire,
-    }
+bigs2 = [big_emily, big_jess, big_zoey, big_claire]
+
+bigs222 = [ big_emily, big_jess, big_zoey, big_claire]
 
 littles1 = [little_krista, little_marie, little_rowan]
 littles2 = [little_krista, little_marie, little_rowan, little_tina]

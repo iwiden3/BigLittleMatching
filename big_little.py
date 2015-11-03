@@ -10,110 +10,77 @@ from collections import defaultdict, deque
 choices = 3
 
 
-def matching(bigs, littles_original):
-    littles = copy.deepcopy(littles_original)
+def matching(bigs, littles):
     combined_result = {}
-    (sorted_bigs, bigs_with_twins) = get_bigs(bigs, len(littles))
-    bigs_dict = sisters_dict(sorted_bigs)
-    if bigs_with_twins:
-        for big_with_twin in bigs_with_twins:
-            big_twin_name = big_with_twin['name'] + '_copy'
-            big_twin_c = copy.deepcopy(big_with_twin)
-            big_twin_c['name'] = big_twin_name
-            bigs_dict[big_twin_name] = big_twin_c
+    (bigs, double_bigs) = get_bigs(bigs, len(littles))
+    if double_bigs:
+        for big in double_bigs:
+            big_copy = copy.deepcopy(big)
+            big_copy['name'] = big['name'] + '_copy'
+            bigs.append(big_copy)
             for little in littles:
-                big_name = big_with_twin['name']
-                if big_name in little['pref']:
-                    ind = little['pref'].index(big_name) + 1
-                    little['pref'].insert(ind, big_twin_name)
+                if big['name'] in little['pref']:
+                    ind = little['pref'].index(big['name']) + 1
+                    little['pref'].insert(ind, big_copy['name'])
 
-    (result, second_round_littles) = matches(bigs_dict, littles)
-    littles_dict = sisters_dict(second_round_littles)
-    unmatched_bigs = sisters_without_matches(bigs_dict, result)
-    (result2, third_round_bigs) = matches(littles_dict, unmatched_bigs)
-    unmatched_littles = sisters_without_matches(littles_dict, result2)
+    (result, littles) = matches(bigs, littles)
+    unmatched_bigs = filter(lambda big: big["name"] not in result.keys(), bigs)
+    (result2, bigs) = matches(littles, unmatched_bigs)
+    unmatched_littles = filter(lambda little: little["name"] not in result2.keys(), littles)
     if unmatched_littles:
-        priority_bigs = sort_bigs(third_round_bigs)[:len(unmatched_littles)]
+        priority_bigs = sort_bigs(bigs)[:len(unmatched_littles)]
         for i in range(len(priority_bigs)):
             pbig = priority_bigs[i]
-            pbig_name = pbig['name']
-            combined_result[pbig_name] = unmatched_littles[i]['name']
+            combined_result[pbig['name']] = unmatched_littles[i]['name']
 
     for (k, v) in result.iteritems():
         combined_result[k] = v['name']
     for (k, v) in result2.iteritems():
         combined_result[v['name']] = k
-    #print combined_result
     return combined_result
 
-def matches(bigs, littles):
+def matches(partners, proposers):
     result = {}
-    littles = deque(littles)
-    little_level = defaultdict(int)
-    second_round = []
-    while littles:
-        little = littles.popleft()
-        i = little_level[little['name']]
-        if i < choices:
-            (match_found, removed_little) = match(bigs, little, i,
-                    result)
+    proposers = deque(proposers)
+    proposer_level = defaultdict(int)
+    next_round = []
+    while proposers:
+        proposer = proposers.popleft()
+        i = proposer_level[proposer['name']]
+        if i < len(proposer['pref']):
+            (match_found, removed_proposer) = match(partners, proposer, i, result)
             if match_found:
-                if removed_little:
-                    little_level[removed_little['name']] += 1
-                    littles.append(removed_little)
+                if removed_proposer:
+                    proposer_level[removed_proposer['name']] += 1
+                    proposers.append(removed_proposer)
             else:
-                little_level[little['name']] += 1
-                littles.append(little)
+                proposer_level[proposer['name']] += 1
+                proposers.append(proposer)
         else:
-            second_round.append(little)
+            next_round.append(proposer)
 
-    return (result, second_round)
+    return (result, next_round)
 
 
-def match(
-    bigs,
-    little,
-    i,
-    result,
-    ):
-
-    big_name = little['pref'][i]
-    if big_name not in result and big_name in bigs.keys():
-        result[big_name] = little
-        return (True, None)
-    elif big_name in bigs.keys():
-        curr_little = result[big_name]['name']
-        temp_little = little['name']
-        curr_big_ranks = bigs[big_name]['pref']
-        curr_little_rank = choices + 1
-        if curr_little in curr_big_ranks:
-            curr_little_rank = curr_big_ranks.index(curr_little) + 1
-        temp_little_rank = choices + 1
-        if temp_little in curr_big_ranks:
-            temp_little_rank = curr_big_ranks.index(temp_little) + 1
-        if temp_little_rank < curr_little_rank:
-            removed_little = result[big_name]
-            result[big_name] = little
-            return (True, removed_little)
+def match(partners, proposer, i, result):
+    partner = filter(lambda partner: partner['name'] == proposer['pref'][i], partners)
+    if partner:
+        partner = partner[0]
+        if partner['name'] not in result:
+            result[partner['name']] = proposer
+            return (True, None)
         else:
-            return (False, None)
+            current_proposer = result[partner['name']]
+            current_proposer_rank = partner['pref'].index(current_proposer['name']) if current_proposer['name'] in partner['pref'] else len(partner['pref'])
+            proposer_rank = partner['pref'].index(proposer['name']) if proposer['name'] in partner['pref'] else len(partner['pref'])
+            if proposer_rank < current_proposer_rank:
+                removed_partner = result[partner['name']]
+                result[partner['name']] = proposer
+                return (True, removed_partner)
+            else:
+                return (False, None)
     else:
         return (False, None)
-
-
-def sisters_without_matches(sisters, result):
-    all_sisters = set(sisters.keys())
-    matched_sisters = set(result.keys())
-    unmatched_sisters = all_sisters ^ matched_sisters
-    return [sisters[sister] for sister in unmatched_sisters]
-
-
-def sisters_dict(sisters):
-    d = {}
-    for sister in sisters:
-        d[sister['name']] = sister
-    return d
-
 
 def sort_bigs(bigs):
     bigs.sort(key=get_key, reverse=True)
@@ -181,25 +148,22 @@ class TestStringMethods(unittest.TestCase):
             }
         self.assertEqual(matching(bigs, littles), result)
         self.assertEqual(matching(big_little_tests.test_bigs1,
-                        big_little_tests.test_littles1),
-                         big_little_tests.test_result6)
+                      big_little_tests.test_littles1),
+                        big_little_tests.test_result6)
         self.assertEqual(matching(big_little_tests.test_bigs1,
-                        big_little_tests.test_littles2),
+                       big_little_tests.test_littles2),
                        big_little_tests.test_result7)
 
         self.assertEqual(matching(big_little_tests.test_bigs1,big_little_tests.test_littles3),big_little_tests.test_result15)
-        self.assertEqual(matching(big_little_tests.bigs42,big_little_tests.littles42),big_little_tests.result42)
-
-        self.assertEqual(matching(big_little_tests.bigs52,
-                        big_little_tests.littles52),
-                       big_little_tests.result52)
+        self.assertEqual(matching(copy.deepcopy(big_little_tests.bigs42), copy.deepcopy(big_little_tests.littles42)), big_little_tests.result42)
+        self.assertEqual(matching(copy.deepcopy(big_little_tests.bigs52),copy.deepcopy(big_little_tests.littles52)), big_little_tests.result52)
 
     def test_matches(self):
         self.assertEqual(matches(big_little_tests.bigs0,
                          big_little_tests.littles0),
                          (big_little_tests.result0, []))
         self.assertEqual(matches(big_little_tests.bigs1,
-                         big_little_tests.littles1),
+                        big_little_tests.littles1),
                          (big_little_tests.result1, []))
         self.assertEqual(matches(big_little_tests.bigs1,
                          big_little_tests.littles2),
@@ -212,28 +176,16 @@ class TestStringMethods(unittest.TestCase):
 
     def test_match(self):
         result = {}
-        i = 0
-        self.assertEqual(match(big_little_tests.bigs1,
-                         big_little_tests.little_marie, 0, result),
-                         (True, None))
+        self.assertEqual(match(big_little_tests.bigs1, big_little_tests.little_marie, 0, result),(True, None))
         self.assertEqual(result['emily'], big_little_tests.little_marie)
         self.assertEqual(match(big_little_tests.bigs1,
-                         big_little_tests.little_rowan, 0, result),
-                         (True, big_little_tests.little_marie))
+                        big_little_tests.little_rowan, 0, result),
+                       (True, big_little_tests.little_marie))
         self.assertEqual(result['emily'], big_little_tests.little_rowan)
         self.assertEqual(match(big_little_tests.bigs1,
-                         big_little_tests.little_marie, 0, result),
+                        big_little_tests.little_marie, 0, result),
                          (False, None))
         self.assertEqual(result['emily'], big_little_tests.little_rowan)
-
-    def test_sister_without_matches(self):
-        self.assertEqual(sisters_without_matches(big_little_tests.bigs2,
-                         big_little_tests.result1),
-                         [big_little_tests.big_claire])
-
-    def test_sisters_dict(self):
-        self.assertEqual(sisters_dict([big_little_tests.little_rowan]),
-                         {'rowan': big_little_tests.little_rowan})
 
     def test_sort_bigs(self):
         bigs = [big_little_tests.big_emily, big_little_tests.big_zoey,

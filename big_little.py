@@ -4,7 +4,6 @@
 import copy
 import unittest
 import big_little_tests
-import Queue
 from collections import defaultdict, deque
 
 def matches(partners, proposers):
@@ -61,28 +60,33 @@ def get_key(big):
 
 
 def get_bigs(bigs, num):
+    
     #if there are not enough big sisters for all the little sisters, error out
     bigs_with_twins = [big for big in bigs if big['twins'] == 1]
     if num > len(bigs_with_twins) + len(bigs):
         num = num - len(bigs_with_twins) - len(bigs)
         raise ValueError('Not enough bigs for all Littles, Need ' 
             + str(num) + ' more twins!')
-    #big sisters who do not have a little sister and want one have the first priority
+    
+    # big sisters who do not have a little sister and want one have the first priority
     first_round_bigs = [big for big in bigs if big['has_little'] == 0 and big['want'] > 0]
     if num <= len(first_round_bigs):
         return first_round_bigs, None
-    #big sisters who want a little but have a little sister are second priority
+    
+    # big sisters who want a little but have a little sister are second priority
     second_round_bigs = [big for big in bigs if big['want'] > 0 and big['has_little'] > 0]
     if num <= len(first_round_bigs) + len(second_round_bigs):
         second_round_bigs.sort(key=get_key, reverse=True)
         return first_round_bigs + second_round_bigs[:num - len(first_round_bigs)], None
-    #if there are not enough bigs, try adding twins
+    
+    # if there are not enough bigs, try adding twins
     bigs_with_twins = [big for big in bigs if big['want'] > 0 and big['twins'] == 1]
     if num <= len(first_round_bigs) + len(second_round_bigs) + len(bigs_with_twins):
         bigs_with_twins.sort(key=get_key, reverse=True)
         num_bigs_with_twins = num - len(first_round_bigs) - len(second_round_bigs)
         return first_round_bigs + second_round_bigs, bigs_with_twins[:num_bigs_with_twins]
-    #if there are not enough bigs with twins, and in last resort bigs
+    
+    # if there are not enough bigs with twins, and in last resort bigs
     third_round_bigs = [big for big in bigs if big['want'] == 0]
     if num <= len(bigs) + len(bigs_with_twins):
         number_last_bigs = len(bigs) + len(bigs_with_twins) - num
@@ -106,10 +110,12 @@ def match_bigs_and_littles(bigs, littles):
     #for round 1, littles have priority in choosing
     round1, littles = matches(bigs, littles)
     unmatched_bigs = [big for big in bigs if big['name'] not in round1.keys()]
+    
     #for round 2, bigs have priority in choosing
     round2, bigs = matches(littles, unmatched_bigs)
     unmatched_littles = [little for little in littles if little['name'] not in round2.keys()]
-    #for round 3, randomnly match bigs and littles
+    
+    #for round 3, arbitrarily match bigs and littles
     result = {}
     if unmatched_littles:
         bigs.sort(key=get_key, reverse=True)

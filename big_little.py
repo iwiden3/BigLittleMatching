@@ -7,6 +7,7 @@ import big_little_tests
 from collections import defaultdict, deque
 
 def matches(partners, proposers):
+    """find a stable match between the partners and the proposers"""
     result = {}
     proposers = deque(proposers)
     proposer_level = defaultdict(int)
@@ -35,6 +36,7 @@ def matches(partners, proposers):
 
 
 def match(partner, proposer, result):
+    """check and see if the proposer is the best match for the partner"""
     if partner['name'] not in result:
         result[partner['name']] = proposer
         return True, None
@@ -56,11 +58,12 @@ def match(partner, proposer, result):
 
 
 def get_key(big):
+    """assign a priority to each big"""
     return big['want'] + big['dying_family'] - big['has_little']
 
 
 def get_bigs(bigs, num):
-    
+    """decide who will be bigs based on the number of littles """
     #if there are not enough big sisters for all the little sisters, error out
     bigs_with_twins = [big for big in bigs if big['twins'] == 1]
     if num > len(bigs_with_twins) + len(bigs):
@@ -96,6 +99,7 @@ def get_bigs(bigs, num):
     return bigs, bigs_with_twins
 
 def match_bigs_and_littles(bigs, littles):
+    """ match bigs with littles so that the matching is stable"""
     bigs, bigs_with_twins = get_bigs(bigs, len(littles))
     if bigs_with_twins:
         for big in bigs_with_twins:

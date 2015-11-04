@@ -7,38 +7,6 @@ import big_little_tests
 import Queue
 from collections import defaultdict, deque
 
-
-def matching(bigs, littles):
-    combined_result = {}
-    bigs, double_bigs = get_bigs(bigs, len(littles))
-    if double_bigs:
-        for big in double_bigs:
-            big_copy = copy.deepcopy(big)
-            big_copy['name'] = big['name'] + '_copy'
-            bigs.append(big_copy)
-            for little in littles:
-                if big['name'] in little['pref']:
-                    ind = little['pref'].index(big['name']) + 1
-                    little['pref'].insert(ind, big_copy['name'])
-
-    result, littles = matches(bigs, littles)
-    unmatched_bigs = filter(lambda big: big['name'] not in result.keys(), bigs)
-    result2, bigs = matches(littles, unmatched_bigs)
-    unmatched_littles = filter(lambda little: little['name'] not in result2.keys(), littles)
-    if unmatched_littles:
-        bigs.sort(key=get_key, reverse=True)
-        priority_bigs = bigs[:len(unmatched_littles)]
-        for i in range(len(priority_bigs)):
-            pbig = priority_bigs[i]
-            combined_result[pbig['name']] = unmatched_littles[i]['name']
-
-    for k, v in result.iteritems():
-        combined_result[k] = v['name']
-    for k, v in result2.iteritems():
-        combined_result[v['name']] = k
-    return combined_result
-
-
 def matches(partners, proposers):
     result = {}
     proposers = deque(proposers)
@@ -48,7 +16,12 @@ def matches(partners, proposers):
         proposer = proposers.popleft()
         i = proposer_level[proposer['name']]
         if i < len(proposer['pref']):
-            match_found, removed_proposer = match(partners, proposer, i, result)
+            partner = [partner for partner in partners 
+                       if partner['name'] == proposer['pref'][i]]
+            if partner:
+                match_found, removed_proposer = match(partner[0], proposer, result)
+            else:
+                match_found = False
             if match_found:
                 if removed_proposer:
                     proposer_level[removed_proposer['name']] += 1
@@ -62,23 +35,23 @@ def matches(partners, proposers):
     return result, next_round
 
 
-def match(partners, proposer, i, result):
-    partner = filter(lambda partner: partner['name'] == proposer['pref'][i], partners)
-    if partner:
-        partner = partner[0]
-        if partner['name'] not in result:
-            result[partner['name']] = proposer
-            return True, None
-        else:
-            current_proposer = result[partner['name']]
-            current_proposer_rank = (partner['pref'].index(current_proposer['name']) if current_proposer['name'] in partner['pref'] else len(partner['pref']))
-            proposer_rank = (partner['pref'].index(proposer['name']) if proposer['name'] in partner['pref'] else len(partner['pref']))
-            if proposer_rank < current_proposer_rank:
-                removed_partner = result[partner['name']]
-                result[partner['name']] = proposer
-                return True, removed_partner
-            else:
-                return False, None
+def match(partner, proposer, result):
+    if partner['name'] not in result:
+        result[partner['name']] = proposer
+        return True, None
+    current_proposer = result[partner['name']]
+    if current_proposer['name'] in partner['pref']:
+        current_proposer_rank = partner['pref'].index(current_proposer['name'])
+    else:
+        current_proposer_rank = len(partner['pref'])
+    if proposer['name'] in partner['pref']:
+        proposer_rank = partner['pref'].index(proposer['name'])
+    else:
+        proposer_rank = len(partner['pref'])
+    if proposer_rank < current_proposer_rank:
+        removed_partner = result[partner['name']]
+        result[partner['name']] = proposer
+        return True, removed_partner
     else:
         return False, None
 
@@ -116,6 +89,36 @@ def get_bigs(bigs, num):
         last_bigs.sort(key=get_key, reverse=True)
         return first_bigs + second_bigs + last_bigs[:len(last_bigs) - number_last_bigs], bigs_twins
     return bigs, bigs_twins
+
+def matching(bigs, littles):
+    combined_result = {}
+    bigs, bigs_with_twins = get_bigs(bigs, len(littles))
+    if bigs_with_twins:
+        for big in bigs_with_twins:
+            big_copy = copy.deepcopy(big)
+            big_copy['name'] = big['name'] + '_copy'
+            bigs.append(big_copy)
+            for little in littles:
+                if big['name'] in little['pref']:
+                    ind = little['pref'].index(big['name']) + 1
+                    little['pref'].insert(ind, big_copy['name'])
+
+    result, littles = matches(bigs, littles)
+    unmatched_bigs = filter(lambda big: big['name'] not in result.keys(), bigs)
+    result2, bigs = matches(littles, unmatched_bigs)
+    unmatched_littles = filter(lambda little: little['name'] not in result2.keys(), littles)
+    if unmatched_littles:
+        bigs.sort(key=get_key, reverse=True)
+        priority_bigs = bigs[:len(unmatched_littles)]
+        for i in range(len(priority_bigs)):
+            pbig = priority_bigs[i]
+            combined_result[pbig['name']] = unmatched_littles[i]['name']
+
+    for k, v in result.iteritems():
+        combined_result[k] = v['name']
+    for k, v in result2.iteritems():
+        combined_result[v['name']] = k
+    return combined_result
 
 
 class TestStringMethods(unittest.TestCase):
@@ -167,7 +170,7 @@ class TestStringMethods(unittest.TestCase):
                          (big_little_tests.result1,
                          [big_little_tests.little_tina]))
 
-    def test_match(self):
+    def match(self):
         result = {}
         self.assertEqual(match(big_little_tests.bigs1,
                          big_little_tests.little_marie, 0, result),

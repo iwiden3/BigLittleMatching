@@ -91,7 +91,7 @@ def get_bigs(bigs, num):
          - number_last_bigs], bigs_with_twins
     return bigs, bigs_with_twins
 
-def matching(bigs, littles):
+def match_bigs_and_littles(bigs, littles):
     bigs, bigs_with_twins = get_bigs(bigs, len(littles))
     if bigs_with_twins:
         for big in bigs_with_twins:
@@ -141,21 +141,21 @@ class TestStringMethods(unittest.TestCase):
             'zoey': 'krista',
             'claire': 'tina',
             }
-        self.assertEqual(matching(bigs, littles), result)
-        self.assertEqual(matching(big_little_tests.test_bigs1,
+        self.assertEqual(match_bigs_and_littles(bigs, littles), result)
+        self.assertEqual(match_bigs_and_littles(big_little_tests.test_bigs1,
                          big_little_tests.test_littles1),
                          big_little_tests.test_result6)
-        self.assertEqual(matching(big_little_tests.test_bigs1,
+        self.assertEqual(match_bigs_and_littles(big_little_tests.test_bigs1,
                          big_little_tests.test_littles2),
                          big_little_tests.test_result7)
 
-        self.assertEqual(matching(big_little_tests.test_bigs1,
+        self.assertEqual(match_bigs_and_littles(big_little_tests.test_bigs1,
                          big_little_tests.test_littles3),
                          big_little_tests.test_result15)
-        self.assertEqual(matching(copy.deepcopy(big_little_tests.bigs42),
+        self.assertEqual(match_bigs_and_littles(copy.deepcopy(big_little_tests.bigs42),
                          copy.deepcopy(big_little_tests.littles42)),
                          big_little_tests.result42)
-        self.assertEqual(matching(copy.deepcopy(big_little_tests.bigs52),
+        self.assertEqual(match_bigs_and_littles(copy.deepcopy(big_little_tests.bigs52),
                          copy.deepcopy(big_little_tests.littles52)),
                          big_little_tests.result52)
 

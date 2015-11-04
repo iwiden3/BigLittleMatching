@@ -61,37 +61,37 @@ def get_key(big):
 
 
 def get_bigs(bigs, num):
-
-    bigs_twins = [big for big in bigs if big['twins'] == 1]
-    if num > len(bigs_twins) + len(bigs):
-        num = num - len(bigs_twins) - len(bigs)
-        raise ValueError('Not enough bigs for all Littles, Need ' + str(num) + ' more twins!')
-
-    first_bigs = [big for big in bigs if big['has_little'] == 0 and big['want'] > 0]
-
-    # are there enough littles for the girls who have not been bigs and want a little?
-    if num <= len(first_bigs):
-        return first_bigs, None
-
-    second_bigs = [big for big in bigs if big['want'] > 0 and big['has_little'] > 0]
-    if num <= len(first_bigs) + len(second_bigs):
-        second_bigs.sort(key=get_key, reverse=True)
-        return first_bigs + second_bigs[:num - len(first_bigs)], None
-
-    bigs_twins = [big for big in bigs if big['want'] > 0 and big['twins'] == 1]
-    if num <= len(first_bigs) + len(second_bigs) + len(bigs_twins):
-        bigs_twins.sort(key=get_key, reverse=True)
-        return first_bigs + second_bigs, bigs_twins[:num - len(first_bigs) - len(second_bigs)]
-
-    last_bigs = [big for big in bigs if big['want'] == 0]
-    if num <= len(bigs) + len(bigs_twins):
-        number_last_bigs = len(bigs) + len(bigs_twins) - num
-        last_bigs.sort(key=get_key, reverse=True)
-        return first_bigs + second_bigs + last_bigs[:len(last_bigs) - number_last_bigs], bigs_twins
-    return bigs, bigs_twins
+    #if there are not enough big sisters for all the little sisters, error out
+    bigs_with_twins = [big for big in bigs if big['twins'] == 1]
+    if num > len(bigs_with_twins) + len(bigs):
+        num = num - len(bigs_with_twins) - len(bigs)
+        raise ValueError('Not enough bigs for all Littles, Need ' 
+            + str(num) + ' more twins!')
+    #big sisters who do not have a little sister and want one have the first priority
+    first_round_bigs = [big for big in bigs if big['has_little'] == 0 and big['want'] > 0]
+    if num <= len(first_round_bigs):
+        return first_round_bigs, None
+    #big sisters who want a little but have a little sister are second priority
+    second_round_bigs = [big for big in bigs if big['want'] > 0 and big['has_little'] > 0]
+    if num <= len(first_round_bigs) + len(second_round_bigs):
+        second_round_bigs.sort(key=get_key, reverse=True)
+        return first_round_bigs + second_round_bigs[:num - len(first_round_bigs)], None
+    #if there are not enough bigs, try adding twins
+    bigs_with_twins = [big for big in bigs if big['want'] > 0 and big['twins'] == 1]
+    if num <= len(first_round_bigs) + len(second_round_bigs) + len(bigs_with_twins):
+        bigs_with_twins.sort(key=get_key, reverse=True)
+        num_bigs_with_twins = num - len(first_round_bigs) - len(second_round_bigs)
+        return first_round_bigs + second_round_bigs, bigs_with_twins[:num_bigs_with_twins]
+    #if there are not enough bigs with twins, and in last resort bigs
+    third_round_bigs = [big for big in bigs if big['want'] == 0]
+    if num <= len(bigs) + len(bigs_with_twins):
+        number_last_bigs = len(bigs) + len(bigs_with_twins) - num
+        third_round_bigs.sort(key=get_key, reverse=True)
+        return first_round_bigs + second_round_bigs + third_round_bigs[:len(third_round_bigs)
+         - number_last_bigs], bigs_with_twins
+    return bigs, bigs_with_twins
 
 def matching(bigs, littles):
-    combined_result = {}
     bigs, bigs_with_twins = get_bigs(bigs, len(littles))
     if bigs_with_twins:
         for big in bigs_with_twins:
@@ -103,22 +103,27 @@ def matching(bigs, littles):
                     ind = little['pref'].index(big['name']) + 1
                     little['pref'].insert(ind, big_copy['name'])
 
-    result, littles = matches(bigs, littles)
-    unmatched_bigs = filter(lambda big: big['name'] not in result.keys(), bigs)
-    result2, bigs = matches(littles, unmatched_bigs)
-    unmatched_littles = filter(lambda little: little['name'] not in result2.keys(), littles)
+    #for round 1, littles have priority in choosing
+    round1, littles = matches(bigs, littles)
+    unmatched_bigs = filter(lambda big: big['name'] not in round1.keys(), bigs)
+    #for round 2, bigs have priority in choosing
+    round2, bigs = matches(littles, unmatched_bigs)
+    unmatched_littles = filter(lambda little: little['name'] not in round2.keys(), littles)
+    #for round 3, randomnly match bigs and littles
+    result = {}
     if unmatched_littles:
         bigs.sort(key=get_key, reverse=True)
         priority_bigs = bigs[:len(unmatched_littles)]
         for i in range(len(priority_bigs)):
             pbig = priority_bigs[i]
-            combined_result[pbig['name']] = unmatched_littles[i]['name']
+            result[pbig['name']] = unmatched_littles[i]['name']
 
-    for k, v in result.iteritems():
-        combined_result[k] = v['name']
-    for k, v in result2.iteritems():
-        combined_result[v['name']] = k
-    return combined_result
+    #combine all results
+    for k, v in round1.iteritems():
+        result[k] = v['name']
+    for k, v in round2.iteritems():
+        result[v['name']] = k
+    return result
 
 
 class TestStringMethods(unittest.TestCase):

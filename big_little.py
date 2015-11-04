@@ -59,7 +59,7 @@ def matches(partners, proposers):
         else:
             next_round.append(proposer)
 
-    return (result, next_round)
+    return result, next_round
 
 
 def match(partners, proposer, i, result):
@@ -68,7 +68,7 @@ def match(partners, proposer, i, result):
         partner = partner[0]
         if partner['name'] not in result:
             result[partner['name']] = proposer
-            return (True, None)
+            return True, None
         else:
             current_proposer = result[partner['name']]
             current_proposer_rank = (partner['pref'].index(current_proposer['name']) if current_proposer['name'] in partner['pref'] else len(partner['pref']))
@@ -76,11 +76,11 @@ def match(partners, proposer, i, result):
             if proposer_rank < current_proposer_rank:
                 removed_partner = result[partner['name']]
                 result[partner['name']] = proposer
-                return (True, removed_partner)
+                return True, removed_partner
             else:
-                return (False, None)
+                return False, None
     else:
-        return (False, None)
+        return False, None
 
 
 def get_key(big):
@@ -98,24 +98,24 @@ def get_bigs(bigs, num):
 
     # are there enough littles for the girls who have not been bigs and want a little?
     if num <= len(first_bigs):
-        return (first_bigs, None)
+        return first_bigs, None
 
     second_bigs = [big for big in bigs if big['want'] > 0 and big['has_little'] > 0]
     if num <= len(first_bigs) + len(second_bigs):
         second_bigs.sort(key=get_key, reverse=True)
-        return (first_bigs + second_bigs[:num - len(first_bigs)], None)
+        return first_bigs + second_bigs[:num - len(first_bigs)], None
 
     bigs_twins = [big for big in bigs if big['want'] > 0 and big['twins'] == 1]
     if num <= len(first_bigs) + len(second_bigs) + len(bigs_twins):
         bigs_twins.sort(key=get_key, reverse=True)
-        return (first_bigs + second_bigs, bigs_twins[:num - len(first_bigs) - len(second_bigs)])
+        return first_bigs + second_bigs, bigs_twins[:num - len(first_bigs) - len(second_bigs)]
 
     last_bigs = [big for big in bigs if big['want'] == 0]
     if num <= len(bigs) + len(bigs_twins):
         number_last_bigs = len(bigs) + len(bigs_twins) - num
         last_bigs.sort(key=get_key, reverse=True)
-        return (first_bigs + second_bigs + last_bigs[:len(last_bigs) - number_last_bigs], bigs_twins)
-    return (bigs, bigs_twins)
+        return first_bigs + second_bigs + last_bigs[:len(last_bigs) - number_last_bigs], bigs_twins
+    return bigs, bigs_twins
 
 
 class TestStringMethods(unittest.TestCase):

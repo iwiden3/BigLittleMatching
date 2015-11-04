@@ -4,6 +4,7 @@
 import copy
 import unittest
 import big_little_tests
+import xlrd
 from collections import defaultdict, deque
 
 def matches(partners, proposers):
@@ -56,6 +57,20 @@ def match(partner, proposer, result):
     else:
         return False, None
 
+def excel_to_dictionary(filename):
+    book = xlrd.open_workbook(filename)
+    first_sheet = book.sheet_by_index(0)
+    col_names = first_sheet.row_values(0)
+    dict_list = []
+    for row_index in xrange(1, first_sheet.nrows):
+        d = {'pref': []}
+        for col_index in xrange(0, first_sheet.ncols):
+            if col_names[col_index].startswith('pref'):
+                d['pref'].append(first_sheet.cell(row_index, col_index).value)
+            else:
+                d[col_names[col_index]] = first_sheet.cell(row_index, col_index).value
+        dict_list.append(d)
+    return dict_list
 
 def get_key(big):
     """assign a priority to each big"""
@@ -64,7 +79,7 @@ def get_key(big):
 
 def get_bigs(bigs, num):
     """decide who will be bigs based on the number of littles """
-    #if there are not enough big sisters for all the little sisters, error out
+    # if there are not enough big sisters for all the little sisters, error out
     bigs_with_twins = [big for big in bigs if big['twins'] == 1]
     if num > len(bigs_with_twins) + len(bigs):
         num = num - len(bigs_with_twins) - len(bigs)
@@ -99,7 +114,7 @@ def get_bigs(bigs, num):
     return bigs, bigs_with_twins
 
 def match_bigs_and_littles(bigs, littles):
-    """ match bigs with littles so that the matching is stable"""
+    """match bigs with littles so that the matching is stable"""
     bigs, bigs_with_twins = get_bigs(bigs, len(littles))
     if bigs_with_twins:
         for big in bigs_with_twins:
@@ -111,15 +126,15 @@ def match_bigs_and_littles(bigs, littles):
                     ind = little['pref'].index(big['name']) + 1
                     little['pref'].insert(ind, big_copy['name'])
 
-    #for round 1, littles have priority in choosing
+    # for round 1, littles have priority in choosing
     round1, littles = matches(bigs, littles)
     unmatched_bigs = [big for big in bigs if big['name'] not in round1.keys()]
     
-    #for round 2, bigs have priority in choosing
+    # for round 2, bigs have priority in choosing
     round2, bigs = matches(littles, unmatched_bigs)
     unmatched_littles = [little for little in littles if little['name'] not in round2.keys()]
     
-    #for round 3, arbitrarily match bigs and littles
+    # for round 3, arbitrarily match bigs and littles
     result = {}
     if unmatched_littles:
         bigs.sort(key=get_key, reverse=True)
@@ -128,7 +143,7 @@ def match_bigs_and_littles(bigs, littles):
             pbig = priority_bigs[i]
             result[pbig['name']] = unmatched_littles[i]['name']
 
-    #combine all results
+    # combine all results
     for k, v in round1.iteritems():
         result[k] = v['name']
     for k, v in round2.iteritems():
@@ -243,4 +258,9 @@ class TestStringMethods(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    #unittest.main()
+    filename1 = raw_input("Input Excel data for bigs: ")
+    filename2 = raw_input("Input Excel data for littles: ")
+    bigs = excel_to_dictionary(filename1)
+    littles = excel_to_dictionary(filename2)
+    print match_bigs_and_littles(bigs, littles)

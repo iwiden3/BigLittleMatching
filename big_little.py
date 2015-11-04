@@ -105,10 +105,10 @@ def matching(bigs, littles):
 
     #for round 1, littles have priority in choosing
     round1, littles = matches(bigs, littles)
-    unmatched_bigs = filter(lambda big: big['name'] not in round1.keys(), bigs)
+    unmatched_bigs = [big for big in bigs if big['name'] not in round1.keys()]
     #for round 2, bigs have priority in choosing
     round2, bigs = matches(littles, unmatched_bigs)
-    unmatched_littles = filter(lambda little: little['name'] not in round2.keys(), littles)
+    unmatched_littles = [little for little in littles if little['name'] not in round2.keys()]
     #for round 3, randomnly match bigs and littles
     result = {}
     if unmatched_littles:

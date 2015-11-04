@@ -7,9 +7,6 @@ import big_little_tests
 import Queue as Q
 from collections import defaultdict, deque
 
-choices = 3
-
-
 def matching(bigs, littles):
     combined_result = {}
     (bigs, double_bigs) = get_bigs(bigs, len(littles))
@@ -28,7 +25,8 @@ def matching(bigs, littles):
     (result2, bigs) = matches(littles, unmatched_bigs)
     unmatched_littles = filter(lambda little: little["name"] not in result2.keys(), littles)
     if unmatched_littles:
-        priority_bigs = sort_bigs(bigs)[:len(unmatched_littles)]
+        bigs.sort(key=get_key, reverse=True)
+        priority_bigs = bigs[:len(unmatched_littles)]
         for i in range(len(priority_bigs)):
             pbig = priority_bigs[i]
             combined_result[pbig['name']] = unmatched_littles[i]['name']
@@ -82,54 +80,40 @@ def match(partners, proposer, i, result):
     else:
         return (False, None)
 
-def sort_bigs(bigs):
-    bigs.sort(key=get_key, reverse=True)
-    return bigs
-
-
 def get_key(big):
     return big['want'] + big['dying_family'] - big['has_little']
 
 
-def get_bigs(bigs, number_of_littles):
+def get_bigs(bigs, num):
     
     bigs_twins = [big for big in bigs if big['twins'] == 1]
-    if number_of_littles > (len(bigs_twins) + len(bigs)):
-        num = number_of_littles - len(bigs_twins)-len(bigs)
+    if num > (len(bigs_twins) + len(bigs)):
+        num = num - len(bigs_twins)-len(bigs)
         raise ValueError("Not enough bigs for all Littles, Need "+str(num)+" more twins!")
-
 
     first_bigs = [big for big in bigs if big['has_little'] == 0
                   and big['want'] > 0]
     # are there enough littles for the girls who have not been bigs and want a little?
-    if number_of_littles <= len(first_bigs):
+    if num <= len(first_bigs):
         return (first_bigs, None)
     
     second_bigs = [big for big in bigs if big['want'] > 0 and big['has_little'] > 0]
-    if number_of_littles <= len(first_bigs) + len(second_bigs):
-        num = len(first_bigs) + len(second_bigs) - number_of_littles
-        s_bigs = sort_bigs(second_bigs)
-        return (first_bigs + s_bigs[:len(s_bigs) - num], None)
+    if num <= len(first_bigs) + len(second_bigs):
+        num = len(first_bigs) + len(second_bigs) - num
+        second_bigs.sort(key=get_key, reverse=True)
+        return (first_bigs + second_bigs[:len(second_bigs) - num], None)
     
     bigs_twins = [big for big in bigs if big['want'] > 0 and big['twins'] == 1]
-    if number_of_littles <= len(first_bigs) + len(second_bigs) + len(bigs_twins):
-        needed_twins = number_of_littles - len(first_bigs) - len(second_bigs)
-        s_bigs_twins = sort_bigs(bigs_twins)
-        return (first_bigs + second_bigs, s_bigs_twins[:needed_twins])
+    if num <= len(first_bigs) + len(second_bigs) + len(bigs_twins):
+        needed_twins = num - len(first_bigs) - len(second_bigs)
+        bigs_twins.sort(key=get_key, reverse=True)
+        return (first_bigs + second_bigs, bigs_twins[:needed_twins])
     last_bigs = [big for big in bigs if big['want'] == 0]
-    if number_of_littles <= len(bigs) + len(bigs_twins):
-        number_last_bigs = len(bigs) + len(bigs_twins ) - number_of_littles
-        sorted_last_bigs = sort_bigs(last_bigs)
-        a = first_bigs + second_bigs + sorted_last_bigs[:len(sorted_last_bigs) - number_last_bigs]
-        return (first_bigs + second_bigs + sorted_last_bigs[:len(sorted_last_bigs) - number_last_bigs],bigs_twins)
+    if num <= len(bigs) + len(bigs_twins):
+        number_last_bigs = len(bigs) + len(bigs_twins ) - num
+        last_bigs.sort(key=get_key, reverse=True)
+        return (first_bigs + second_bigs + last_bigs[:len(last_bigs) - number_last_bigs],bigs_twins)
     return (bigs, bigs_twins)
-
-def get_twins(bigs, number_of_littles):
-    needed_twins = number_of_littles - len(bigs)
-    bigs_twins = [big for big in bigs if big['twins'] == 1]
-    s_big_twins = sort_bigs(bigs_twins)
-    return s_big_twins[:needed_twins]
-
 
 class TestStringMethods(unittest.TestCase):
 
@@ -186,12 +170,6 @@ class TestStringMethods(unittest.TestCase):
                         big_little_tests.little_marie, 0, result),
                          (False, None))
         self.assertEqual(result['emily'], big_little_tests.little_rowan)
-
-    def test_sort_bigs(self):
-        bigs = [big_little_tests.big_emily, big_little_tests.big_zoey,
-                big_little_tests.big_claire, big_little_tests.big_jess,
-                big_little_tests.big_bonnie]
-        self.assertEqual(sort_bigs(bigs), bigs)
 
     def test_get_bigs(self):
         self.assertEqual(get_bigs(big_little_tests.test_bigs1, 8),

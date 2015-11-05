@@ -7,8 +7,10 @@ import big_little_tests
 import xlrd
 from collections import defaultdict, deque
 
+
 def matches(partners, proposers):
     """find a stable match between the partners and the proposers"""
+
     result = {}
     proposers = deque(proposers)
     proposer_level = defaultdict(int)
@@ -17,10 +19,9 @@ def matches(partners, proposers):
         proposer = proposers.popleft()
         i = proposer_level[proposer['name']]
         if i < len(proposer['pref']):
-            partner = [partner for partner in partners 
-                       if partner['name'] == proposer['pref'][i]]
+            partner = [partner for partner in partners if partner['name'] == proposer['pref'][i]]
             if partner:
-                match_found, removed_proposer = match(partner[0], proposer, result)
+                (match_found, removed_proposer) = match(partner[0], proposer, result)
             else:
                 match_found = False
             if match_found:
@@ -33,14 +34,15 @@ def matches(partners, proposers):
         else:
             next_round.append(proposer)
 
-    return result, next_round
+    return (result, next_round)
 
 
 def match(partner, proposer, result):
     """check and see if the proposer is the best match for the partner"""
+
     if partner['name'] not in result:
         result[partner['name']] = proposer
-        return True, None
+        return (True, None)
     current_proposer = result[partner['name']]
     if current_proposer['name'] in partner['pref']:
         current_proposer_rank = partner['pref'].index(current_proposer['name'])
@@ -53,11 +55,14 @@ def match(partner, proposer, result):
     if proposer_rank < current_proposer_rank:
         removed_partner = result[partner['name']]
         result[partner['name']] = proposer
-        return True, removed_partner
+        return (True, removed_partner)
     else:
-        return False, None
+        return (False, None)
+
 
 def excel_to_dictionary(filename):
+    """create dictionary from excel"""
+
     book = xlrd.open_workbook(filename)
     first_sheet = book.sheet_by_index(0)
     col_names = first_sheet.row_values(0)
@@ -72,183 +77,180 @@ def excel_to_dictionary(filename):
         dict_list.append(d)
     return dict_list
 
-def get_key(big):
+
+def get_key(big_sister):
     """assign a priority to each big"""
-    return big['want'] + big['dying_family'] - big['has_little']
+
+    return big_sister['want'] + big_sister['dying_family'] - big_sister['has_little']
 
 
-def get_bigs(bigs, num):
+def get_big_sisters(bigs, num):
     """decide who will be bigs based on the number of littles """
+
     # if there are not enough big sisters for all the little sisters, error out
+
     bigs_with_twins = [big for big in bigs if big['twins'] == 1]
     if num > len(bigs_with_twins) + len(bigs):
         num = num - len(bigs_with_twins) - len(bigs)
-        raise ValueError('Not enough bigs for all Littles, Need ' 
-            + str(num) + ' more twins!')
-    
+        raise ValueError('Not enough bigs for all Littles, Need '
+                         + str(num) + ' more twins!')
+
     # big sisters who do not have a little sister and want one have the first priority
-    first_round_bigs = [big for big in bigs if big['has_little'] == 0 and big['want'] > 0]
+
+    first_round_bigs = [big for big in bigs if big['has_little'] == 0
+                        and big['want'] > 0]
     if num <= len(first_round_bigs):
-        return first_round_bigs, None
-    
+        return (first_round_bigs, None)
+
     # big sisters who want a little but have a little sister are second priority
-    second_round_bigs = [big for big in bigs if big['want'] > 0 and big['has_little'] > 0]
+
+    second_round_bigs = [big for big in bigs if big['want'] > 0
+                         and big['has_little'] > 0]
     if num <= len(first_round_bigs) + len(second_round_bigs):
         second_round_bigs.sort(key=get_key, reverse=True)
-        return first_round_bigs + second_round_bigs[:num - len(first_round_bigs)], None
-    
+        return (first_round_bigs + second_round_bigs[:num
+                - len(first_round_bigs)], None)
+
     # if there are not enough bigs, try adding twins
-    bigs_with_twins = [big for big in bigs if big['want'] > 0 and big['twins'] == 1]
+
+    bigs_with_twins = [big for big in bigs if big['want'] > 0
+                       and big['twins'] == 1]
     if num <= len(first_round_bigs) + len(second_round_bigs) + len(bigs_with_twins):
         bigs_with_twins.sort(key=get_key, reverse=True)
         num_bigs_with_twins = num - len(first_round_bigs) - len(second_round_bigs)
-        return first_round_bigs + second_round_bigs, bigs_with_twins[:num_bigs_with_twins]
-    
+        return (first_round_bigs + second_round_bigs, bigs_with_twins[:num_bigs_with_twins])
+
     # if there are not enough bigs with twins, and in last resort bigs
+
     third_round_bigs = [big for big in bigs if big['want'] == 0]
     if num <= len(bigs) + len(bigs_with_twins):
         number_last_bigs = len(bigs) + len(bigs_with_twins) - num
         third_round_bigs.sort(key=get_key, reverse=True)
-        return first_round_bigs + second_round_bigs + third_round_bigs[:len(third_round_bigs)
-         - number_last_bigs], bigs_with_twins
-    return bigs, bigs_with_twins
+        return (first_round_bigs + second_round_bigs
+                + third_round_bigs[:len(third_round_bigs)
+                - number_last_bigs], bigs_with_twins)
+    return (bigs, bigs_with_twins)
 
-def match_bigs_and_littles(bigs, littles):
+
+def match_sisters(big_sisters, little_sisters):
     """match bigs with littles so that the matching is stable"""
-    bigs, bigs_with_twins = get_bigs(bigs, len(littles))
+
+    (big_sisters, bigs_with_twins) = get_big_sisters(big_sisters,
+            len(little_sisters))
     if bigs_with_twins:
-        for big in bigs_with_twins:
-            big_copy = copy.deepcopy(big)
-            big_copy['name'] = big['name'] + '_copy'
-            bigs.append(big_copy)
-            for little in littles:
-                if big['name'] in little['pref']:
-                    ind = little['pref'].index(big['name']) + 1
-                    little['pref'].insert(ind, big_copy['name'])
+        for big_sister in bigs_with_twins:
+            big_sister_copy = copy.deepcopy(big_sister)
+            big_sister_copy['name'] = big_sister['name'] + '_copy'
+            big_sisters.append(big_sister_copy)
+            for little_sister in little_sisters:
+                if big_sister['name'] in little_sister['pref']:
+                    ind = little_sister['pref'].index(big_sister['name'
+                            ]) + 1
+                    little_sister['pref'].insert(ind,
+                            big_sister_copy['name'])
 
     # for round 1, littles have priority in choosing
-    round1, littles = matches(bigs, littles)
-    unmatched_bigs = [big for big in bigs if big['name'] not in round1.keys()]
-    
+
+    (round1, little_sisters) = matches(big_sisters, little_sisters)
+    unmatched_big_sisters = [big_sister for big_sister in big_sisters
+                             if big_sister['name'] not in round1.keys()]
+
     # for round 2, bigs have priority in choosing
-    round2, bigs = matches(littles, unmatched_bigs)
-    unmatched_littles = [little for little in littles if little['name'] not in round2.keys()]
-    
+
+    (round2, big_sisters) = matches(little_sisters,
+                                    unmatched_big_sisters)
+    unmatched_little_sisters = [little_sister for little_sister in
+                                little_sisters if little_sister['name']
+                                not in round2.keys()]
+
     # for round 3, arbitrarily match bigs and littles
+
     result = {}
-    if unmatched_littles:
-        bigs.sort(key=get_key, reverse=True)
-        priority_bigs = bigs[:len(unmatched_littles)]
+    if unmatched_little_sisters:
+        big_sisters.sort(key=get_key, reverse=True)
+        priority_bigs = big_sisters[:len(unmatched_little_sisters)]
         for i in range(len(priority_bigs)):
             pbig = priority_bigs[i]
-            result[pbig['name']] = unmatched_littles[i]['name']
+            result[pbig['name']] = unmatched_little_sisters[i]['name']
 
     # combine all results
-    for k, v in round1.iteritems():
+
+    for (k, v) in round1.iteritems():
         result[k] = v['name']
-    for k, v in round2.iteritems():
+    for (k, v) in round2.iteritems():
         result[v['name']] = k
     return result
 
 
 class TestStringMethods(unittest.TestCase):
 
-    def test_matching(self):
-        bigs = [big_little_tests.big_emily, big_little_tests.big_jess,
-                big_little_tests.big_zoey, big_little_tests.big_claire]
-        littles = [big_little_tests.little_krista,
-                   big_little_tests.little_marie,
-                   big_little_tests.little_rowan,
-                   big_little_tests.little_tina]
-        result = {
-            'emily': 'rowan',
-            'jess': 'marie',
-            'zoey': 'krista',
-            'claire': 'tina',
-            }
-        self.assertEqual(match_bigs_and_littles(bigs, littles), result)
-        self.assertEqual(match_bigs_and_littles(big_little_tests.test_bigs1,
-                         big_little_tests.test_littles1),
-                         big_little_tests.test_result6)
-        self.assertEqual(match_bigs_and_littles(big_little_tests.test_bigs1,
-                         big_little_tests.test_littles2),
-                         big_little_tests.test_result7)
-
-        self.assertEqual(match_bigs_and_littles(big_little_tests.test_bigs1,
-                         big_little_tests.test_littles3),
-                         big_little_tests.test_result15)
-        self.assertEqual(match_bigs_and_littles(copy.deepcopy(big_little_tests.bigs42),
-                         copy.deepcopy(big_little_tests.littles42)),
-                         big_little_tests.result42)
-        self.assertEqual(match_bigs_and_littles(copy.deepcopy(big_little_tests.bigs52),
-                         copy.deepcopy(big_little_tests.littles52)),
-                         big_little_tests.result52)
-
     def test_matches(self):
-        self.assertEqual(matches(big_little_tests.bigs0,
-                         big_little_tests.littles0),
+        self.assertEqual(matches(big_little_tests.big_sisters0,
+                         big_little_tests.little_sisters0),
                          (big_little_tests.result0, []))
-        self.assertEqual(matches(big_little_tests.bigs1,
-                         big_little_tests.littles1),
+        self.assertEqual(matches(big_little_tests.big_sisters1,
+                         big_little_tests.little_sisters1),
                          (big_little_tests.result1, []))
-        self.assertEqual(matches(big_little_tests.bigs1,
-                         big_little_tests.littles2),
+        self.assertEqual(matches(big_little_tests.big_sisters1,
+                         big_little_tests.little_sisters2),
                          (big_little_tests.result1,
                          [big_little_tests.little_tina]))
-        self.assertEqual(matches(big_little_tests.bigs2,
-                         big_little_tests.littles3),
+        self.assertEqual(matches(big_little_tests.big_sisters2,
+                         big_little_tests.little_sisters2),
                          (big_little_tests.result1,
                          [big_little_tests.little_tina]))
 
-    def match(self):
+    def test_match_sisters(self):
+        self.assertEqual(match_sisters(big_little_tests.big_sisters2,
+                         big_little_tests.little_sisters2),
+                         big_little_tests.result2)
+        self.assertEqual(match_sisters(big_little_tests.big_sisters3,
+                         big_little_tests.little_sisters3),
+                         big_little_tests.result3)
+        self.assertEqual(match_sisters(big_little_tests.big_sisters3,
+                         big_little_tests.little_sisters4),
+                         big_little_tests.result4)
+
+        self.assertEqual(match_sisters(big_little_tests.big_sisters3,
+                         big_little_tests.little_sisters5),
+                         big_little_tests.result5)
+        self.assertEqual(match_sisters(copy.deepcopy(big_little_tests.big_sisters4),
+                         copy.deepcopy(big_little_tests.little_sisters6)),
+                         big_little_tests.result6)
+        self.assertEqual(match_sisters(copy.deepcopy(big_little_tests.big_sisters5),
+                         copy.deepcopy(big_little_tests.little_sisters7)),
+                         big_little_tests.result7)
+
+    def test_match(self):
         result = {}
-        self.assertEqual(match(big_little_tests.bigs1,
-                         big_little_tests.little_marie, 0, result),
-                         (True, None))
+        self.assertEqual(match(big_little_tests.big_emily,
+                         big_little_tests.little_marie, result), (True,
+                         None))
         self.assertEqual(result['emily'], big_little_tests.little_marie)
-        self.assertEqual(match(big_little_tests.bigs1,
-                         big_little_tests.little_rowan, 0, result),
-                         (True, big_little_tests.little_marie))
+        self.assertEqual(match(big_little_tests.big_emily,
+                         big_little_tests.little_rowan, result), (True,
+                         big_little_tests.little_marie))
         self.assertEqual(result['emily'], big_little_tests.little_rowan)
-        self.assertEqual(match(big_little_tests.bigs1,
-                         big_little_tests.little_marie, 0, result),
+        self.assertEqual(match(big_little_tests.big_emily,
+                         big_little_tests.little_marie, result),
                          (False, None))
         self.assertEqual(result['emily'], big_little_tests.little_rowan)
 
-    def test_get_bigs(self):
-        self.assertEqual(get_bigs(big_little_tests.test_bigs1, 8),
-                         (big_little_tests.test_result1, None))
-        self.assertEqual(get_bigs(big_little_tests.test_bigs1, 11),
-                         (big_little_tests.test_result2, None))
-        self.assertEqual(get_bigs(big_little_tests.test_bigs1, 14),
-                         (big_little_tests.test_result3, None))
-        big_twins_result1 = [
-            big_little_tests.big_carrie,
-            big_little_tests.big_charlie,
-            big_little_tests.big_miranda,
-            big_little_tests.big_samantha,
-            big_little_tests.big_erica,
-            big_little_tests.big_topanga,
-            big_little_tests.big_jessica,
-            ]
-        big_twins_result2 = [
-            big_little_tests.big_carrie,
-            big_little_tests.big_miranda,
-            big_little_tests.big_samantha,
-            big_little_tests.big_charlie,
-            big_little_tests.big_topanga,
-            big_little_tests.big_erica,
-            big_little_tests.big_jessica,
-            ]
-
-        self.assertEqual(get_bigs(big_little_tests.test_bigs1, 21),
-                         (big_little_tests.test_result4,
-                         big_twins_result1))
-        self.assertEqual(get_bigs(big_little_tests.test_bigs1, 23),
-                         (big_little_tests.test_bigs1,
-                         big_twins_result2))
+    def test_get_big_sisters(self):
+        self.assertEqual(get_big_sisters(big_little_tests.big_sisters3,
+                         8), (big_little_tests.result8, None))
+        self.assertEqual(get_big_sisters(big_little_tests.big_sisters3,
+                         11), (big_little_tests.result9, None))
+        self.assertEqual(get_big_sisters(big_little_tests.big_sisters3,
+                         14), (big_little_tests.result10, None))
+        self.assertEqual(get_big_sisters(big_little_tests.big_sisters3,
+                         21), (big_little_tests.result11,
+                         big_little_tests.result12))
+        self.assertEqual(get_big_sisters(big_little_tests.big_sisters3,
+                         23), (big_little_tests.big_sisters3,
+                         big_little_tests.result13))
         try:
-            get_bigs(big_little_tests.test_bigs1, 24)
+            get_big_sisters(big_little_tests.big_sisters3, 24)
         except ValueError:
             pass
         except e:
@@ -258,9 +260,13 @@ class TestStringMethods(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    #unittest.main()
-    filename1 = raw_input("Input Excel data for bigs: ")
-    filename2 = raw_input("Input Excel data for littles: ")
-    bigs = excel_to_dictionary(filename1)
-    littles = excel_to_dictionary(filename2)
-    print match_bigs_and_littles(bigs, littles)
+    unittest.main()
+
+    # filename1 = raw_input("Input Excel data for bigs: ")
+    # filename2 = raw_input("Input Excel data for littles: ")
+    # try:
+     #   big_sisters = excel_to_dictionary(filename1)
+      #  little_sisters = excel_to_dictionary(filename2)
+       # print match_sisters(big_sisters, little_sisters)
+    # except IOError:
+     #   print "Check filenames!"

@@ -84,7 +84,61 @@ result3 = [
     samantha,
     charlie,
     erica,
+    lily,
+    ]
+
+result4 = [
+    rhianna,
+    molly,
+    ariel,
+    snow,
+    belle,
+    carrie,
+    miranda,
+    samantha,
+    charlie,
+    erica,
+    lily,
     topanga,
+    jessica,
+    nicole,
+    ]
+
+result5 = [
+    rhianna,
+    molly,
+    ariel,
+    snow,
+    belle,
+    carrie,
+    miranda,
+    samantha,
+    charlie,
+    topanga,
+    erica,
+    jessica,
+    nicole,
+    lily,
+    ]
+
+result6 = [
+    carrie,
+    charlie,
+    miranda,
+    samantha,
+    erica,
+    topanga,
+    jessica,
+    ]
+
+result7 = [
+    carrie,
+    miranda,
+    samantha,
+    charlie,
+    topanga,
+    erica,
+    jessica,
     ]
 
 class TestStringMethods(unittest.TestCase):
@@ -107,6 +161,9 @@ class TestStringMethods(unittest.TestCase):
     def test_get_big_sisters(self):
         self.assertEqual(get_big_sisters(big_sisters3, 8), (result2, None))
         self.assertEqual(get_big_sisters(big_sisters3, 11), (result3, None))
+        self.assertEqual(get_big_sisters(big_sisters3, 14), (result4, None))
+        self.assertEqual(get_big_sisters(big_sisters3, 21), (result5, result6))
+        self.assertEqual(get_big_sisters(big_sisters3, 23), (big_sisters3, result7))
 
 
 if __name__ == '__main__':

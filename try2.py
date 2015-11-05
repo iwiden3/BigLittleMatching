@@ -17,6 +17,9 @@ class Sister(object):
 	def __hash__(self):
 		return hash(self.name)
 
+	def __repr__(self):
+		return self.name
+
 	def get_rank(self, other):
 		if other.name in self.pref:
 			return self.pref.index(other.name)
@@ -31,13 +34,16 @@ class BigSister(Sister):
 		self.want = want
 
 	def __lt__(self, other):
-		return self.get_score < other.get_score
+		return self.get_score() < other.get_score()
 
-	def get_score(big_sister):
+	def __repr__(self):
+		return self.name + " " + str(self.get_score())
+
+	def get_score(self):
     	#"""assign a priority to each big"""
 		return self.want + self.dying_family - self.has_little
 
-	def copy():
+	def copy(self):
 		return BigSister(self.name, copy.deepcopy(self.pref), self.dying_family, self.twins, self.has_little)
 
 class LittleSister(Sister):
@@ -124,7 +130,7 @@ def get_big_sisters(bigs, num):
 
     # if there are not enough bigs with twins, and in last resort bigs
 
-    third_round_bigs = [big for big in bigs if big['want'] == 0]
+    third_round_bigs = [big for big in bigs if big.want == 0]
     if num <= len(bigs) + len(bigs_with_twins):
         number_last_bigs = len(bigs) + len(bigs_with_twins) - num
         third_round_bigs.sort(reverse=True)

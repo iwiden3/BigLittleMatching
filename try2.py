@@ -28,23 +28,17 @@ class Sister(object):
 class BigSister(Sister):
 	def __init__(self, name, pref, dying_family, twins, has_little, want):
 		super(BigSister, self).__init__(name, pref)
+        self.has_little = has_little
 		self.dying_family = dying_family
 		self.twins = twins
-		self.has_little = has_little
 		self.want = want
 
 	def __lt__(self, other):
 		return self.get_score() < other.get_score()
 
-	def __repr__(self):
-		return self.name + " " + str(self.get_score())
-
 	def get_score(self):
-    	#"""assign a priority to each big"""
+       # """assign a priority to each big"""
 		return self.want + self.dying_family - self.has_little
-
-	def copy(self):
-		return BigSister(self.name, copy.deepcopy(self.pref), self.dying_family, self.twins, self.has_little, self.want)
 
 class LittleSister(Sister):
 	pass
@@ -91,6 +85,37 @@ def match(partner, proposer, result):
     		result[partner] = proposer
     		return (True, current_proposer)
     return (False, None)
+
+def excel_to_dictionary(filename):
+    """create dictionary from excel"""
+
+    book = xlrd.open_workbook(filename)
+    first_sheet = book.sheet_by_index(0)
+    col_names = first_sheet.row_values(0)
+    result = []
+    for row_index in xrange(1, first_sheet.nrows):
+        d = {'pref': []}
+        for col_index in xrange(0, first_sheet.ncols):
+            if col_names[col_index].startswith('pref'):
+                d['pref'].append(first_sheet.cell(row_index, col_index).value)
+            else:
+                d[col_names[col_index]] = first_sheet.cell(row_index, col_index).value
+        result.append(d)
+    return result
+
+def read_big_sisters(l):
+	result = []
+	for d in l:
+		big_sister = BigSister(d['name'], d['pref'], d['dying_family'], d['twins'], d['has_little'], d['want'])
+		result.append(big_sister)
+	return result
+
+def read_little_sisters(l):
+	result = []
+	for d in l:
+		little_sister = LittleSister(d['name'], d['pref'])
+		result.append(little_sister)
+	return result
 
 def get_big_sisters(bigs, num):
     """decide who will be bigs based on the number of littles """
@@ -146,7 +171,7 @@ def match_sisters(big_sisters, little_sisters):
             len(little_sisters))
     if bigs_with_twins:
         for big_sister in bigs_with_twins:
-            big_sister_copy = big_sister.copy()
+            big_sister_copy = copy.deepcopy(big_sister)
             big_sister_copy.name = big_sister.name + '_copy'
             big_sisters.append(big_sister_copy)
             for little_sister in little_sisters:
@@ -155,13 +180,11 @@ def match_sisters(big_sisters, little_sisters):
                 	little_sister.pref.insert(ind + 1, big_sister_copy.name)
 
     # for round 1, littles have priority in choosing
-   # print "1"
     (round1, little_sisters) = matches(big_sisters, little_sisters)
     unmatched_big_sisters = [big_sister for big_sister in big_sisters
                              if big_sister not in round1.keys()]
 
     # for round 2, bigs have priority in choosing
-    #print "2"
     (round2, big_sisters) = matches(little_sisters,
                                     unmatched_big_sisters)
     unmatched_little_sisters = [little_sister for little_sister in
@@ -169,7 +192,6 @@ def match_sisters(big_sisters, little_sisters):
                                 not in round2.keys()]
 
     # for round 3, arbitrarily match bigs and littles
-    #print "3"
     result = {}
     if unmatched_little_sisters:
         big_sisters.sort(reverse=True)
@@ -179,11 +201,18 @@ def match_sisters(big_sisters, little_sisters):
             result[pbig.name] = unmatched_little_sisters[i].name
 
     # combine all results
-   # print round1
     for (k, v) in round1.iteritems():
         result[k.name] = v.name
-    #print "hi"
     for (k, v) in round2.iteritems():
        	result[v.name] = k.name
-    #print result
     return result
+
+if __name__ == '__main__':
+    filename1 = raw_input("Input Excel data for bigs: ")
+    filename2 = raw_input("Input Excel data for littles: ")
+    try:
+        big_sisters = read_big_sisters(excel_to_dictionary(filename1))
+        little_sisters = read_little_sisters(excel_to_dictionary(filename2))
+        print match_sisters(big_sisters, little_sisters)
+    except IOError:
+        print "Check filenames!"

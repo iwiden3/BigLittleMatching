@@ -28,16 +28,16 @@ class Sister(object):
 class BigSister(Sister):
 	def __init__(self, name, pref, dying_family, twins, has_little, want):
 		super(BigSister, self).__init__(name, pref)
-        self.has_little = has_little
 		self.dying_family = dying_family
 		self.twins = twins
+		self.has_little = has_little
 		self.want = want
 
 	def __lt__(self, other):
 		return self.get_score() < other.get_score()
 
 	def get_score(self):
-       # """assign a priority to each big"""
+    #"""assign a priority to each big"""
 		return self.want + self.dying_family - self.has_little
 
 class LittleSister(Sister):
@@ -103,19 +103,15 @@ def excel_to_dictionary(filename):
         result.append(d)
     return result
 
-def read_big_sisters(l):
-	result = []
-	for d in l:
-		big_sister = BigSister(d['name'], d['pref'], d['dying_family'], d['twins'], d['has_little'], d['want'])
-		result.append(big_sister)
-	return result
-
-def read_little_sisters(l):
-	result = []
-	for d in l:
-		little_sister = LittleSister(d['name'], d['pref'])
-		result.append(little_sister)
-	return result
+def read_sisters(l, f):
+    result = []
+    for d in l:
+        if f == "BigSister":
+            sister = BigSister(d['name'], d['pref'], d['dying_family'], d['twins'], d['has_little'], d['want'])
+        elif f == "LittleSister":
+            sister = LittleSister(d['name'], d['pref'])
+        result.append(sister)
+    return result
 
 def get_big_sisters(bigs, num):
     """decide who will be bigs based on the number of littles """
@@ -211,8 +207,8 @@ if __name__ == '__main__':
     filename1 = raw_input("Input Excel data for bigs: ")
     filename2 = raw_input("Input Excel data for littles: ")
     try:
-        big_sisters = read_big_sisters(excel_to_dictionary(filename1))
-        little_sisters = read_little_sisters(excel_to_dictionary(filename2))
+        big_sisters = read_sisters(excel_to_dictionary(filename1), "BigSister")
+        little_sisters = read_sisters(excel_to_dictionary(filename2), "LittleSister")
         print match_sisters(big_sisters, little_sisters)
     except IOError:
         print "Check filenames!"

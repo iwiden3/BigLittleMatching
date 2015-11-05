@@ -23,11 +23,12 @@ class Sister(object):
 		return None
 
 class BigSister(Sister):
-	def __init__(self, name, pref, dying_family, twins, has_little):
+	def __init__(self, name, pref, dying_family, twins, has_little, want):
 		super(BigSister, self).__init__(name, pref)
 		self.dying_family = dying_family
 		self.twins = twins
 		self.has_little = has_little
+		self.want = want
 
 	def __lt__(self, other):
 		return self.get_score < other.get_score
@@ -54,14 +55,14 @@ def matches(partners, proposers):
         proposer = proposers.popleft()
         i = proposer_level[proposer]
         if i < len(proposer.pref):
-            partner = [partner for partner in partners if partner == proposer.pref[i]]
+            partner = [partner for partner in partners if partner.name == proposer.pref[i]]
             if partner:
                 (match_found, removed_proposer) = match(partner[0], proposer, result)
             else:
                 match_found = False
             if match_found:
                 if removed_proposer:
-                    proposer_level[removed_proposer['name']] += 1
+                    proposer_level[removed_proposer] += 1
                     proposers.append(removed_proposer)
             else:
                 proposer_level[proposer] += 1

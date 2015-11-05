@@ -157,14 +157,14 @@ def match_sisters(big_sisters, little_sisters):
     # for round 1, littles have priority in choosing
     (round1, little_sisters) = matches(big_sisters, little_sisters)
     unmatched_big_sisters = [big_sister for big_sister in big_sisters
-                             if big_sister.name not in round1.keys()]
+                             if big_sister not in round1.keys()]
 
     # for round 2, bigs have priority in choosing
 
     (round2, big_sisters) = matches(little_sisters,
                                     unmatched_big_sisters)
     unmatched_little_sisters = [little_sister for little_sister in
-                                little_sisters if little_sister.name
+                                little_sisters if little_sister
                                 not in round2.keys()]
 
     # for round 3, arbitrarily match bigs and littles

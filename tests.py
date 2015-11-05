@@ -141,6 +141,13 @@ result7 = [
     jessica,
     ]
 
+result8 = {
+    'emily': 'rowan',
+    'jess': 'marie',
+    'zoey': 'krista',
+    'claire': 'tina',
+    }
+
 class TestStringMethods(unittest.TestCase):
     
     def test_matches(self):
@@ -164,6 +171,17 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(get_big_sisters(big_sisters3, 14), (result4, None))
         self.assertEqual(get_big_sisters(big_sisters3, 21), (result5, result6))
         self.assertEqual(get_big_sisters(big_sisters3, 23), (big_sisters3, result7))
+        try:
+            get_big_sisters(big_sisters3, 24)
+        except ValueError:
+            pass
+        except e:
+            self.fail('Unexpecteed exception thrown', e)
+        else:
+            self.fail('ExpectedException not thrown')
+
+    def test_match_sisters(self):
+        self.assertEqual(match_sisters(big_sisters2, little_sisters2), result8)
 
 
 if __name__ == '__main__':

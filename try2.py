@@ -44,7 +44,7 @@ class BigSister(Sister):
 		return self.want + self.dying_family - self.has_little
 
 	def copy(self):
-		return BigSister(self.name, copy.deepcopy(self.pref), self.dying_family, self.twins, self.has_little)
+		return BigSister(self.name, copy.deepcopy(self.pref), self.dying_family, self.twins, self.has_little, self.want)
 
 class LittleSister(Sister):
 	pass
@@ -155,12 +155,13 @@ def match_sisters(big_sisters, little_sisters):
                 	little_sister.pref.insert(ind + 1, big_sister_copy.name)
 
     # for round 1, littles have priority in choosing
+   # print "1"
     (round1, little_sisters) = matches(big_sisters, little_sisters)
     unmatched_big_sisters = [big_sister for big_sister in big_sisters
                              if big_sister not in round1.keys()]
 
     # for round 2, bigs have priority in choosing
-
+    #print "2"
     (round2, big_sisters) = matches(little_sisters,
                                     unmatched_big_sisters)
     unmatched_little_sisters = [little_sister for little_sister in
@@ -168,19 +169,21 @@ def match_sisters(big_sisters, little_sisters):
                                 not in round2.keys()]
 
     # for round 3, arbitrarily match bigs and littles
-
+    #print "3"
     result = {}
     if unmatched_little_sisters:
         big_sisters.sort(reverse=True)
         priority_bigs = big_sisters[:len(unmatched_little_sisters)]
         for i in range(len(priority_bigs)):
             pbig = priority_bigs[i]
-            result[pbig] = unmatched_little_sisters[i]
+            result[pbig.name] = unmatched_little_sisters[i].name
 
     # combine all results
-
+   # print round1
     for (k, v) in round1.iteritems():
         result[k.name] = v.name
+    #print "hi"
     for (k, v) in round2.iteritems():
        	result[v.name] = k.name
+    #print result
     return result

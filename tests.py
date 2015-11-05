@@ -26,6 +26,11 @@ lily = BigSister('lily', ['meg', 'pam', 'barbie'], 0, 0, 1, 2)
 robin = BigSister('robin', ['serena', 'riley', 'maya'], 1, 0, 0, 0)
 tracy = BigSister('tracy', ['elsa', 'brenda', 'kelly'], 0, 0, 0, 0)
 
+nick = BigSister('nick', ['alex', 'kennon', 'tim'], 1, 1, 0, 2)
+chris = BigSister('chris', ['kennon', 'tim', 'alex'], 0, 1, 0, 2)
+josh = BigSister('josh', ['kat', 'kennon', 'tim'], 0, 1, 0, 1)
+tony = BigSister('tony', ['kat', 'kennon', 'tim'], 0, 1, 0, 1)
+
 marie = LittleSister('marie', ['emily', 'jess', 'zoey'])
 rowan = LittleSister('rowan', ['emily', 'jess', 'zoey'])
 ella = LittleSister('ella', ['bonnie', 'laura', 'anna'])
@@ -33,7 +38,27 @@ liz = LittleSister('liz', ['anna', 'bonnie', 'laura'])
 sara = LittleSister('sara', ['laura', 'anna', 'bonnie'])
 krista = LittleSister('krista', ['zoey', 'emily', 'jess'])
 tina = LittleSister('tina', ['emily', 'jess', 'zoey'])
+tara = LittleSister('tara', ['molly', 'ariel', 'snow'])
+hara = LittleSister('hara', ['belle', 'carrie', 'miranda'])
+jana = LittleSister('jana', ['samantha', 'charlie', 'topanga'])
+lane = LittleSister('lane', ['erica', 'jessica', 'nicole'])
+mara = LittleSister('mara', ['lily', 'robin', 'molly'])
+zenon = LittleSister('zenon', ['ariel', 'snow', 'carrie'])
+elsa = LittleSister('elsa', ['miranda', 'samantha', 'charlie'])
+brenda = LittleSister('brenda', ['topanga', 'erica', 'jessica'])
+kelly = LittleSister('kelly', ['nicole', 'lily', 'robin'])
+julia = LittleSister('julia', ['molly', 'ariel', 'snow'])
+betty = LittleSister('betty', ['belle', 'carrie', 'miranda'])
+xena = LittleSister('xena', ['samantha', 'charlie', 'topanga'])
+meg = LittleSister('meg', ['erica', 'jessica', 'nicole'])
+pam = LittleSister('pam', ['lily', 'robin', 'molly'])
+barbie = LittleSister('barbie', ['ariel', 'snow', 'belle'])
 
+alex = LittleSister('alex', ['nick', 'chris', 'josh'])
+kennon = LittleSister('kennon', ['nick', 'chris', 'josh'])
+tim = LittleSister('tim', ['josh', 'chris', 'nick'])
+kat = LittleSister('kat', ['nick', 'chris', 'josh'])
+miller = LittleSister('miller', ['matt', 'eric', 'justin'])
 
 big_sisters0 = [anna, laura, bonnie]
 big_sisters1 = [emily, jess, zoey]
@@ -56,10 +81,45 @@ big_sisters3 = [
     robin,
     tracy,
     ]
+big_sisters4 = [nick, chris, josh]
+big_sisters5 = [nick, chris, josh, tony]
 
 little_sisters0 = [ella, liz, sara]
 little_sisters1 = [krista, marie, rowan]
 little_sisters2 = [krista, marie, rowan, tina]
+
+little_sisters3 = [
+    tara,
+    hara,
+    jana,
+    lane,
+    mara,
+    zenon,
+    elsa,
+    brenda,
+    kelly,
+    julia,
+    ]
+little_sisters4 = [
+    tara,
+    hara,
+    jana,
+    lane,
+    mara,
+    zenon,
+    elsa,
+    brenda,
+    kelly,
+    julia,
+    betty,
+    xena,
+    meg,
+    pam,
+    barbie,
+    ]
+
+little_sisters5 = [alex, kennon, tim, kat]
+little_sisters6 = [alex, kennon, tim, kat, miller]
 
 result0 = {bonnie : ella, anna : liz, laura : sara}
 result1 = {emily : rowan, jess: marie, zoey : krista}
@@ -148,6 +208,50 @@ result8 = {
     'claire': 'tina',
     }
 
+result9 = {
+    'molly': 'tara',
+    'ariel': 'zenon',
+    'belle': 'hara',
+    'miranda': 'elsa',
+    'samantha': 'jana',
+    'carrie': 'mara',
+    'snow': 'julia',
+    'erica': 'lane',
+    'charlie': 'brenda',
+    'rhianna': 'kelly',
+    }    
+result10 = {
+    'molly': 'tara',
+    'ariel': 'zenon',
+    'belle': 'betty',
+    'miranda': 'elsa',
+    'samantha': 'jana',
+    'carrie': 'hara',
+    'carrie_copy': 'mara',
+    'snow': 'barbie',
+    'erica': 'meg',
+    'charlie': 'xena',
+    'rhianna': 'julia',
+    'lily': 'pam',
+    'nicole': 'kelly',
+    'topanga': 'brenda',
+    'jessica': 'lane',
+    }
+result11 = {
+    'nick': 'alex',
+    'nick_copy': 'kennon',
+    'chris': 'kat',
+    'josh': 'tim',
+    }
+
+result12 = {
+    'nick': 'alex',
+    'nick_copy': 'kennon',
+    'chris': 'kat',
+    'josh': 'tim',
+    'tony': 'miller',
+    }
+
 class TestStringMethods(unittest.TestCase):
     
     def test_matches(self):
@@ -182,7 +286,10 @@ class TestStringMethods(unittest.TestCase):
 
     def test_match_sisters(self):
         self.assertEqual(match_sisters(big_sisters2, little_sisters2), result8)
-
+        self.assertEqual(match_sisters(big_sisters3, little_sisters3), result9)
+        #self.assertEqual(match_sisters(big_sisters3, little_sisters4), result10)
+        self.assertEqual(match_sisters(copy.deepcopy(big_sisters4), copy.deepcopy(little_sisters5)), result11)
+        self.assertEqual(match_sisters(copy.deepcopy(big_sisters5), copy.deepcopy(little_sisters6)), result12)
 
 if __name__ == '__main__':
     unittest.main()

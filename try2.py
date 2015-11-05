@@ -9,10 +9,13 @@ from collections import defaultdict, deque
 class Sister(object):
 	def __init__(self, name, pref):
 		self.name = name
-		self.prep = pref
+		self.pref = pref
 
 	def __eq__(self, other):
 		return self.name == other.name
+
+	def __hash__(self):
+		return hash(self.name)
 
 	def get_rank(self, other):
 		if other.name in self.pref:
@@ -21,7 +24,7 @@ class Sister(object):
 
 class BigSister(Sister):
 	def __init__(self, name, pref, dying_family, twins, has_little):
-		super(Sister, self).__init__(name, pref)
+		super(BigSister, self).__init__(name, pref)
 		self.dying_family = dying_family
 		self.twins = twins
 		self.has_little = has_little
@@ -172,6 +175,5 @@ def match_sisters(big_sisters, little_sisters):
     for (k, v) in round1.iteritems():
         result[k.name] = v.name
     for (k, v) in round2.iteritems():
-        result[v.name] = k.name
+       	result[v.name] = k.name
     return result
-

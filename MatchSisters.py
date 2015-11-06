@@ -10,6 +10,11 @@ LITTLE_SISTER = "Little Sister"
 class Sister(object):
 
     def __init__(self, name, pref):
+        """
+        Args:
+            name (string): Name of Sister.
+            pref (list): List of names of Sisters. 
+        """
         self.name = name
         self.pref = pref
 

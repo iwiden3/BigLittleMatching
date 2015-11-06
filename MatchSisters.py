@@ -51,9 +51,11 @@ def matches(partners, proposers):
     """Find a stable match between the partners and the proposers.
     
     Args:
-        partners (list) : list of sisters 
-        proposers (list) : list of sisters 
-
+        partners (list): List of sisters. 
+        proposers (list): List of sisters.
+    
+    Returns:
+        dict: The mapping between big sister names and little sister names.
     """
 
     result = {}
@@ -99,7 +101,7 @@ def match(partner, proposer, result):
     return False, None
 
 def load_sisters_from_spreadsheet(filename, sister_type):
-    """Convert excel spreadsheet to list of Sister Objects"""
+    """Convert excel spreadsheet to list of Sister objects."""
 
     book = xlrd.open_workbook(filename)
     first_sheet = book.sheet_by_index(0)
@@ -131,7 +133,6 @@ def get_big_sisters(bigs, num_littles):
     """Decide who will be big sisters based on the number of littles."""
 
     # if there are not enough big sisters for all the little sisters, error out
-
     bigs_with_twins = [big for big in bigs if big.wants_twins]
     if num_littles > len(bigs_with_twins) + len(bigs):
         num_littles = num_littles - len(bigs_with_twins) - len(bigs)
@@ -139,46 +140,44 @@ def get_big_sisters(bigs, num_littles):
                          + str(num_littles) + ' more twins!')
 
     # big sisters who do not have a little sister and want one have the first priority
-
-    first_priority_bigs = [big for big in bigs if big.num_littles == 0
-                        and big.want_level > 0]
+    first_priority_bigs = [big for big in bigs 
+                           if not big.num_littles and big.want_level]
     if num_littles <= len(first_priority_bigs):
-        return (first_priority_bigs, None)
+        return first_priority_bigs, None
 
     # big sisters who want a little but have a little sister are second priority
-
-    second_priority_bigs = [big for big in bigs if big.want_level > 0
-                         and big.num_littles > 0]
+    second_priority_bigs = [big for big in bigs
+                            if big.want_level and big.num_littles]
     if num_littles <= len(first_priority_bigs) + len(second_priority_bigs):
         second_priority_bigs.sort(reverse=True)
         return (first_priority_bigs + second_priority_bigs[:num_littles
                 - len(first_priority_bigs)], None)
 
     # if there are not enough bigs, try adding twins
-
-    bigs_with_twins = [big for big in bigs if big.want_level > 0
-                       and big.wants_twins]
-    if num_littles <= len(first_priority_bigs) + len(second_priority_bigs) + len(bigs_with_twins):
+    bigs_with_twins = [big for big in bigs
+                       if big.want_level and big.wants_twins]
+    if num_littles <= len(first_priority_bigs) + \
+                      len(second_priority_bigs) + len(bigs_with_twins):
         bigs_with_twins.sort(reverse=True)
         num_bigs_with_twins = \
             num_littles - len(first_priority_bigs) - len(second_priority_bigs)
-        return (first_priority_bigs + second_priority_bigs, bigs_with_twins[:num_bigs_with_twins])
+        return (first_priority_bigs + second_priority_bigs,
+                bigs_with_twins[:num_bigs_with_twins])
 
     # if there are not enough bigs with twins, and in last resort bigs
-
-    third_priority_bigs = [big for big in bigs if big.want_level == 0]
+    third_priority_bigs = [big for big in bigs if not big.want_level]
     if num_littles <= len(bigs) + len(bigs_with_twins):
         number_last_bigs = len(bigs) + len(bigs_with_twins) - num_littles
         third_priority_bigs.sort(reverse=True)
         return (first_priority_bigs + second_priority_bigs
                 + third_priority_bigs[:len(third_priority_bigs)
                 - number_last_bigs], bigs_with_twins)
-    return (bigs, bigs_with_twins)
+    return bigs, bigs_with_twins
 
 def match_sisters(big_sisters, little_sisters):
-    """match bigs with littles so that the matching is stable"""
+    """Match bigs with littles so that the matching is stable."""
 
-    (big_sisters, bigs_with_twins) = get_big_sisters(big_sisters,
+    big_sisters, bigs_with_twins = get_big_sisters(big_sisters,
             len(little_sisters))
     if bigs_with_twins:
         for big_sister in bigs_with_twins:
@@ -191,16 +190,16 @@ def match_sisters(big_sisters, little_sisters):
                     little_sister.pref.insert(ind + 1, big_sister_copy.name)
 
     # for round 1, littles have priority in choosing
-    (round1, little_sisters) = matches(big_sisters, little_sisters)
+    round1, little_sisters = matches(big_sisters, little_sisters)
     unmatched_big_sisters = [big_sister for big_sister in big_sisters
                              if big_sister not in round1.keys()]
 
     # for round 2, bigs have priority in choosing
-    (round2, big_sisters) = matches(little_sisters,
-                                    unmatched_big_sisters)
-    unmatched_little_sisters = [little_sister for little_sister in
-                                little_sisters if little_sister
-                                not in round2.keys()]
+    round2, big_sisters = matches(little_sisters,
+                                  unmatched_big_sisters)
+    unmatched_little_sisters = [little_sister 
+                                for little_sister in little_sisters
+                                if little_sister not in round2.keys()]
 
     # for round 3, arbitrarily match bigs and littles
     result = {}
@@ -212,9 +211,9 @@ def match_sisters(big_sisters, little_sisters):
             result[pbig.name] = unmatched_little_sisters[i].name
 
     # combine all results
-    for (k, v) in round1.iteritems():
+    for k, v in round1.iteritems():
         result[k.name] = v.name
-    for (k, v) in round2.iteritems():
+    for k, v in round2.iteritems():
         result[v.name] = k.name
     return result
 

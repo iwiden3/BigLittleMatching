@@ -6,6 +6,7 @@ from collections import defaultdict, deque
 
 BIG_SISTER = "Big Sister"
 LITTLE_SISTER = "Little Sister"
+
 class Sister(object):
 
     def __init__(self, name, pref):

@@ -13,7 +13,8 @@ class Sister(object):
         """
         Args:
             name (string): Name of Sister.
-            pref (list): List of names of Sisters. 
+            pref (list): List of names of Sisters from highest preference to
+                         lowest preference.  
         """
         self.name = name
         self.pref = pref
@@ -61,7 +62,8 @@ def matches(partners, proposers):
         proposers (list): List of sisters.
     
     Returns:
-        dict: The mapping between big sister names and little sister names.
+        dict: The mapping between big sister and little sister.
+        list: List of unmatched sisters.
     """
 
     result = {}
@@ -92,7 +94,10 @@ def matches(partners, proposers):
     return result, next_round
 
 def match(partner, proposer, result):
-    """Check and see if the proposer is the best match for the partner."""
+    """Check and see if the proposer is the best match for the partner.
+       If the proposer is the best match for the partner set the match in
+       the result.
+    """
 
     if partner not in result:
         result[partner] = proposer
@@ -136,7 +141,16 @@ def load_sisters_from_spreadsheet(filename, sister_type):
     return result
 
 def get_big_sisters(bigs, num_littles):
-    """Decide who will be big sisters based on the number of littles."""
+    """Decide who will be big sisters based on the number of littles.
+
+    Args:
+        bigs (list): List of potential big sisters.
+        num_littles (int): Number of little sisters.
+
+    Returns:
+        (list): List of big sisters.
+        (list): List of big sisters who will have two little sisters.
+    """
 
     # if there are not enough big sisters for all the little sisters, error out
     bigs_with_twins = [big for big in bigs if big.wants_twins]
@@ -181,10 +195,16 @@ def get_big_sisters(bigs, num_littles):
     return bigs, bigs_with_twins
 
 def match_sisters(big_sisters, little_sisters):
-    """Match bigs with littles so that the matching is stable."""
+    """Match bigs with littles so that the matching is stable.
+    Args:
+        partners (list): List of big sisters. 
+        proposers (list): List of little sisters.
+    
+    Returns:
+        dict: The mapping between big sister name and little sister and name.
+    """
 
-    big_sisters, bigs_with_twins = get_big_sisters(big_sisters,
-            len(little_sisters))
+    big_sisters, bigs_with_twins = get_big_sisters(big_sisters, len(little_sisters))
     if bigs_with_twins:
         for big_sister in bigs_with_twins:
             big_sister_copy = copy.deepcopy(big_sister)

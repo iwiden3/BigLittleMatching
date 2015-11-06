@@ -63,7 +63,7 @@ big_sisters0 = [anna, laura, bonnie]
 big_sisters1 = [emily, jess, zoey]
 big_sisters2 = [emily, jess, zoey, claire]
 big_sisters3 = [rhianna, molly, ariel, snow, belle, carrie, miranda, samantha,
-    charlie, topanga, erica, jessica, nicole, lily, robin, tracy]
+                charlie, topanga, erica, jessica, nicole, lily, robin, tracy]
 big_sisters4 = [nick, chris, josh]
 big_sisters5 = [nick, chris, josh, tony]
 
@@ -71,118 +71,25 @@ little_sisters0 = [ella, liz, sara]
 little_sisters1 = [krista, marie, rowan]
 little_sisters2 = [krista, marie, rowan, tina]
 
-little_sisters3 = [
-    tara,
-    hara,
-    jana,
-    lane,
-    mara,
-    zenon,
-    elsa,
-    brenda,
-    kelly,
-    julia,
-    ]
-little_sisters4 = [
-    tara,
-    hara,
-    jana,
-    lane,
-    mara,
-    zenon,
-    elsa,
-    brenda,
-    kelly,
-    julia,
-    betty,
-    xena,
-    meg,
-    pam,
-    barbie,
-    ]
+little_sisters3 = [tara, hara, jana, lane, mara, zenon, elsa, brenda, kelly, julia]
+little_sisters4 = [tara, hara, jana, lane, mara, zenon, elsa, brenda, kelly, julia,
+                   betty, xena, meg, pam, barbie]
 
 little_sisters5 = [alex, kennon, tim, kat]
 little_sisters6 = [alex, kennon, tim, kat, miller]
 
 result0 = {bonnie : ella, anna : liz, laura : sara}
 result1 = {emily : rowan, jess: marie, zoey : krista}
-result2 = [
-    rhianna,
-    molly,
-    ariel,
-    snow,
-    belle,
-    carrie,
-    miranda,
-    samantha,
-    ]
-result3 = [
-    rhianna,
-    molly,
-    ariel,
-    snow,
-    belle,
-    carrie,
-    miranda,
-    samantha,
-    charlie,
-    erica,
-    lily,
-    ]
+result2 = [rhianna, molly, ariel, snow, belle, carrie, miranda, samantha]
+result3 = [rhianna, molly, ariel, snow, belle, carrie, miranda, samantha, charlie,
+           erica, lily]
+result4 = [rhianna, molly, ariel, snow, belle, carrie, miranda, samantha, charlie,
+           erica, lily, topanga, jessica, nicole]
+result5 = [rhianna, molly, ariel, snow, belle, carrie, miranda, samantha, charlie,
+           topanga, erica, jessica, nicole, lily]
+result6 = [carrie, charlie, miranda, samantha, erica, topanga, jessica]
 
-result4 = [
-    rhianna,
-    molly,
-    ariel,
-    snow,
-    belle,
-    carrie,
-    miranda,
-    samantha,
-    charlie,
-    erica,
-    lily,
-    topanga,
-    jessica,
-    nicole,
-    ]
-
-result5 = [
-    rhianna,
-    molly,
-    ariel,
-    snow,
-    belle,
-    carrie,
-    miranda,
-    samantha,
-    charlie,
-    topanga,
-    erica,
-    jessica,
-    nicole,
-    lily,
-    ]
-
-result6 = [
-    carrie,
-    charlie,
-    miranda,
-    samantha,
-    erica,
-    topanga,
-    jessica,
-    ]
-
-result7 = [
-    carrie,
-    miranda,
-    samantha,
-    charlie,
-    topanga,
-    erica,
-    jessica,
-    ]
+result7 = [carrie, miranda, samantha, charlie, topanga, erica, jessica]
 
 result8 = {
     'emily': 'rowan',
